@@ -1,14 +1,20 @@
-import Navbar from "./components/Navbar"
-import Main from "./components/Main"
+import React from "react";
+import Navbar from "./components/Navbar";
+import Main from "./components/Main";
+import Footer from "./components/Footer";
 
 const App = () => {
-
   return (
-    <>
-    <Navbar />
-    <Main />
-    </>
-  )
-}
+    <div className="min-h-screen flex flex-col bg-neutral-primary">
+      <Navbar />
 
-export default App
+      <main className="flex-1 flex items-center justify-center">
+        <Main />
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default App;
