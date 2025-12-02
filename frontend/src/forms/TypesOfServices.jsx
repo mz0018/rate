@@ -47,6 +47,12 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
     });
   };
 
+  // Next is disabled when nothing is selected, or when "please specify" is selected but no text provided
+  const otherOptionSelected = services.some(
+    (service) => service.name.toLowerCase().includes("please specify") && checkedServices.includes(service.id)
+  );
+  const isNextDisabled = checkedServices.length === 0 || (otherOptionSelected && otherServiceText.trim() === "");
+
   return (
     <div
       className="p-6 rounded-lg shadow-lg w-150 transition-colors duration-300 flex flex-col gap-4"
@@ -116,7 +122,7 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
 
       <div className="flex gap-3 justify-between mt-4">
         <BtnGoBack onClick={handleGoBack} />
-        <BtnNext onClick={handleNext} />
+        <BtnNext onClick={handleNext} disabled={isNextDisabled} />
       </div>
     </div>
   );

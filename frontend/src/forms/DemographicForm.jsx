@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 import BtnGoBack from "../buttons/BtnGoBack";
 import BtnNext from "../buttons/BtnNext";
 
-const DemographicForm = ({ onBack, selectedOffice, selectedServices, otherServiceText }) => {
+const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, otherServiceText }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [addressInputs, setAddressInputs] = useState({});
@@ -35,15 +35,11 @@ const DemographicForm = ({ onBack, selectedOffice, selectedServices, otherServic
 
   const handleNext = () => {
     if (isLastStep) {
-      const formData = {
-        selectedOffice,
-        selectedServices,
-        otherServiceText,
-        demographics: selectedOptions,
-        addressDetails: addressInputs,
+      const demographicsData = {
+        selectedOptions,
+        addressInputs,
       };
-      console.log("Complete Form Data:", formData);
-      // Add submission logic here
+      onNext(demographicsData);
     } else {
       setCurrentStep((prev) => prev + 1);
     }
@@ -56,6 +52,15 @@ const DemographicForm = ({ onBack, selectedOffice, selectedServices, otherServic
       setCurrentStep((prev) => prev - 1);
     }
   };
+
+  // Determine if Next should be enabled for the current step
+  const currentSelections = selectedOptions[currentCategory.id] || [];
+  const hasSelection = currentSelections.length > 0;
+  let allAddressFilled = true;
+  if (isAddressStep && hasSelection) {
+    allAddressFilled = currentSelections.every((opt) => (addressInputs[opt] || "").trim().length > 0);
+  }
+  const isNextDisabled = !hasSelection || (isAddressStep && !allAddressFilled);
 
   return (
     <div
@@ -132,7 +137,7 @@ const DemographicForm = ({ onBack, selectedOffice, selectedServices, otherServic
 
       <div className="flex gap-3 justify-between mt-4">
         <BtnGoBack onClick={handleBack} />
-        <BtnNext onClick={handleNext} />
+        <BtnNext onClick={handleNext} disabled={isNextDisabled} />
       </div>
     </div>
   );

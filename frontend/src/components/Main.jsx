@@ -3,12 +3,15 @@ import SelectOffice from "../forms/SelectOffice";
 
 const TypesOfServices = lazy(() => import("../forms/TypesOfServices"));
 const DemographicForm = lazy(() => import("../forms/DemographicForm"));
+const ServiceRatingForm = lazy(() => import("../forms/ServiceRatingForm"));
 
 const Main = () => {
   const [selectedOffice, setSelectedOffice] = useState(null);
   const [showDemographic, setShowDemographic] = useState(false);
+  const [showServiceRating, setShowServiceRating] = useState(false);
   const [selectedServices, setSelectedServices] = useState(null);
   const [otherServiceText, setOtherServiceText] = useState("");
+  const [demographicsData, setDemographicsData] = useState(null);
 
   const handleGoToDemographic = (serviceData) => {
     setSelectedServices(serviceData.services);
@@ -16,10 +19,21 @@ const Main = () => {
     setShowDemographic(true);
   };
 
-  const handleBackFromDemographic = () => {
+  const handleGoToServiceRating = (demData) => {
+    setDemographicsData(demData);
     setShowDemographic(false);
-    setSelectedServices(null);
-    setOtherServiceText("");
+    setShowServiceRating(true);
+  };
+
+  const handleBackFromServiceRating = () => {
+    setShowServiceRating(false);
+    setShowDemographic(true);
+  };
+
+  const handleSubmitServiceRating = (completeData) => {
+    // All data is logged in ServiceRatingForm
+    console.log("Final Submission:", completeData);
+    // Add API submission logic here
   };
 
   return (
@@ -33,7 +47,7 @@ const Main = () => {
           <SelectOffice setSelectedOffice={setSelectedOffice} />
         )}
 
-        {selectedOffice && !showDemographic && (
+        {selectedOffice && !showDemographic && !showServiceRating && (
           <Suspense fallback={<div className="text-white">Loading services...</div>}>
             <TypesOfServices
               selectedOffice={selectedOffice}
@@ -43,13 +57,31 @@ const Main = () => {
           </Suspense>
         )}
 
-        {showDemographic && (
+        {showDemographic && !showServiceRating && (
           <Suspense fallback={<div className="text-white">Loading form...</div>}>
             <DemographicForm
-              onBack={handleBackFromDemographic}
+              onBack={() => {
+                setShowDemographic(false);
+                setSelectedOffice(null);
+              }}
+              onNext={handleGoToServiceRating}
               selectedOffice={selectedOffice}
               selectedServices={selectedServices}
               otherServiceText={otherServiceText}
+            />
+          </Suspense>
+        )}
+
+        {showServiceRating && (
+          <Suspense fallback={<div className="text-white">Loading rating form...</div>}>
+            <ServiceRatingForm
+              onBack={handleBackFromServiceRating}
+              onSubmit={handleSubmitServiceRating}
+              selectedOffice={selectedOffice}
+              selectedServices={selectedServices}
+              otherServiceText={otherServiceText}
+              demographics={demographicsData?.selectedOptions}
+              addressDetails={demographicsData?.addressInputs}
             />
           </Suspense>
         )}
