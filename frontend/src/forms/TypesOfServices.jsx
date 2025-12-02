@@ -2,8 +2,9 @@ import { useState } from "react";
 import { offices } from "../mocks/Offices";
 import { Check } from "lucide-react";
 import BtnGoBack from "../buttons/BtnGoBack";
+import BtnNext from "../buttons/BtnNext";
 
-const TypesOfServices = ({ selectedOffice, setSelectedOffice }) => {
+const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
   if (!selectedOffice) return null;
 
   const officeObj = offices.find(
@@ -25,18 +26,30 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice }) => {
   }
 
   const [checkedServices, setCheckedServices] = useState([]);
+  const [otherServiceText, setOtherServiceText] = useState("");
 
   const handleCheckboxChange = (id) => {
     setCheckedServices((prev) =>
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
     );
+    // Clear other service text if unchecking the "other" option
+    if (checkedServices.includes(id)) {
+      setOtherServiceText("");
+    }
   };
 
   const handleGoBack = () => setSelectedOffice(null);
 
+  const handleNext = () => {
+    onNext({
+      services: checkedServices,
+      otherServiceText,
+    });
+  };
+
   return (
     <div
-      className="p-6 rounded-lg shadow-lg w-150 transition-colors duration-300"
+      className="p-6 rounded-lg shadow-lg w-150 transition-colors duration-300 flex flex-col gap-4"
       style={{
         backgroundColor: "var(--bg-color)",
         color: "var(--text-color)",
@@ -76,6 +89,24 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice }) => {
                   {service.name}
                 </span>
               </label>
+
+              {service.name.includes("please specify") &&
+                checkedServices.includes(service.id) && (
+                  <div className="mt-3 ml-8">
+                    <input
+                      type="text"
+                      value={otherServiceText}
+                      onChange={(e) => setOtherServiceText(e.target.value)}
+                      placeholder="Please specify your service request..."
+                      className="w-full px-3 py-2 rounded border transition-colors duration-300"
+                      style={{
+                        backgroundColor: "var(--bg-color)",
+                        borderColor: "rgba(128,128,128,0.3)",
+                        color: "var(--text-color)",
+                      }}
+                    />
+                  </div>
+                )}
             </li>
           ))}
         </ul>
@@ -83,7 +114,10 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice }) => {
         <p>No services available for this office.</p>
       )}
 
-      <BtnGoBack onClick={handleGoBack} />
+      <div className="flex gap-3 justify-between mt-4">
+        <BtnGoBack onClick={handleGoBack} />
+        <BtnNext onClick={handleNext} />
+      </div>
     </div>
   );
 };
