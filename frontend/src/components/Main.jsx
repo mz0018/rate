@@ -1,5 +1,6 @@
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy } from "react";
 import FormLoader from "../fallbacks/FormLoader";
+import useFormSubmission from "../hooks/useFormSubmission";
 
 const SelectOffice = lazy(() => import("../forms/SelectOffice"));
 const TypesOfServices = lazy(() => import("../forms/TypesOfServices"));
@@ -7,21 +8,21 @@ const DemographicForm = lazy(() => import("../forms/DemographicForm"));
 const ServiceRatingForm = lazy(() => import("../forms/ServiceRatingForm"));
 
 const Main = () => {
-  const [selectedOffice, setSelectedOffice] = useState(null);
-  const [showDemographic, setShowDemographic] = useState(false);
-  const [showServiceRating, setShowServiceRating] = useState(false);
-  const [selectedServices, setSelectedServices] = useState(null);
-  const [otherServiceText, setOtherServiceText] = useState("");
-  const [demographicsData, setDemographicsData] = useState(null);
+  const formHook = useFormSubmission();
+  const [showDemographic, setShowDemographic] = React.useState(false);
+  const [showServiceRating, setShowServiceRating] = React.useState(false);
+
+  const handleSelectOffice = (office) => {
+    formHook.updateOffice(office);
+  };
 
   const handleGoToDemographic = (serviceData) => {
-    setSelectedServices(serviceData.services);
-    setOtherServiceText(serviceData.otherServiceText);
+    formHook.updateServices(serviceData.services, serviceData.otherServiceText);
     setShowDemographic(true);
   };
 
   const handleGoToServiceRating = (demData) => {
-    setDemographicsData(demData);
+    formHook.updateDemographics(demData);
     setShowDemographic(false);
     setShowServiceRating(true);
   };
@@ -32,9 +33,7 @@ const Main = () => {
   };
 
   const handleSubmitServiceRating = (completeData) => {
-    // All data is logged in ServiceRatingForm
-    console.log("Final Submission:", completeData);
-    // Add API submission logic here
+    formHook.submitForm(completeData.serviceRatings); 
   };
 
   return (
@@ -44,17 +43,21 @@ const Main = () => {
     >
       <div className="absolute inset-0 bg-black opacity-80"></div>
       <div className="relative z-10 space-y-4">
-        {!selectedOffice && !showDemographic && (
+        {!formHook.selectedOffice && !showDemographic && (
           <Suspense fallback={<FormLoader />}>
-            <SelectOffice setSelectedOffice={setSelectedOffice} />
+            <SelectOffice setSelectedOffice={handleSelectOffice} />
           </Suspense>
         )}
 
-        {selectedOffice && !showDemographic && !showServiceRating && (
+        {formHook.selectedOffice && !showDemographic && !showServiceRating && (
           <Suspense fallback={<FormLoader />}>
             <TypesOfServices
-              selectedOffice={selectedOffice}
-              setSelectedOffice={setSelectedOffice}
+              selectedOffice={formHook.selectedOffice}
+              setSelectedOffice={(office) => {
+                if (office === null) {
+                  formHook.updateOffice(null);
+                }
+              }}
               onNext={handleGoToDemographic}
             />
           </Suspense>
@@ -65,12 +68,12 @@ const Main = () => {
             <DemographicForm
               onBack={() => {
                 setShowDemographic(false);
-                setSelectedOffice(null);
+                formHook.updateOffice(null);
               }}
               onNext={handleGoToServiceRating}
-              selectedOffice={selectedOffice}
-              selectedServices={selectedServices}
-              otherServiceText={otherServiceText}
+              selectedOffice={formHook.selectedOffice}
+              selectedServices={formHook.selectedServices}
+              otherServiceText={formHook.otherServiceText}
             />
           </Suspense>
         )}
@@ -80,11 +83,11 @@ const Main = () => {
             <ServiceRatingForm
               onBack={handleBackFromServiceRating}
               onSubmit={handleSubmitServiceRating}
-              selectedOffice={selectedOffice}
-              selectedServices={selectedServices}
-              otherServiceText={otherServiceText}
-              demographics={demographicsData?.selectedOptions}
-              addressDetails={demographicsData?.addressInputs}
+              selectedOffice={formHook.selectedOffice}
+              selectedServices={formHook.selectedServices}
+              otherServiceText={formHook.otherServiceText}
+              demographics={formHook.demographics}
+              addressDetails={formHook.addressDetails}
             />
           </Suspense>
         )}

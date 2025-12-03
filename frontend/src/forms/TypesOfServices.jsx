@@ -28,12 +28,19 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
   const [checkedServices, setCheckedServices] = useState([]);
   const [otherServiceText, setOtherServiceText] = useState("");
 
-  const handleCheckboxChange = (id) => {
-    setCheckedServices((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
-    );
-    // Clear other service text if unchecking the "other" option
-    if (checkedServices.includes(id)) {
+  const handleCheckboxChange = (id, name) => {
+    setCheckedServices((prev) => {
+      const serviceObj = { id, name };
+      const isSelected = prev.some((s) => s.id === id);
+      
+      if (isSelected) {
+        return prev.filter((s) => s.id !== id);
+      } else {
+        return [...prev, serviceObj];
+      }
+    });
+    
+    if (checkedServices.some((s) => s.id === id)) {
       setOtherServiceText("");
     }
   };
@@ -47,9 +54,8 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
     });
   };
 
-  // Next is disabled when nothing is selected, or when "please specify" is selected but no text provided
-  const otherOptionSelected = services.some(
-    (service) => service.name.toLowerCase().includes("please specify") && checkedServices.includes(service.id)
+  const otherOptionSelected = checkedServices.some(
+    (service) => service.name.toLowerCase().includes("please specify")
   );
   const isNextDisabled = checkedServices.length === 0 || (otherOptionSelected && otherServiceText.trim() === "");
 
@@ -76,8 +82,8 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
                 <input
                   id={`service-${service.id}`}
                   type="checkbox"
-                  checked={checkedServices.includes(service.id)}
-                  onChange={() => handleCheckboxChange(service.id)}
+                  checked={checkedServices.some((s) => s.id === service.id)}
+                  onChange={() => handleCheckboxChange(service.id, service.name)}
                   className="peer absolute w-5 h-5 opacity-0 cursor-pointer"
                 />
 
@@ -86,7 +92,7 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
                     flex items-center justify-center transition-colors duration-300
                     peer-checked:bg-[#0052ff] peer-checked:border-[#0052ff]"
                 >
-                  {checkedServices.includes(service.id) && (
+                  {checkedServices.some((s) => s.id === service.id) && (
                     <Check className="w-4 h-4 text-white" />
                   )}
                 </span>
@@ -97,7 +103,7 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
               </label>
 
               {service.name.includes("please specify") &&
-                checkedServices.includes(service.id) && (
+                checkedServices.some((s) => s.id === service.id) && (
                   <div className="mt-3 ml-8">
                     <input
                       type="text"

@@ -7,7 +7,6 @@ const FormLoader = () => {
         color: "var(--text-color)",
       }}
     >
-      {/* Title skeleton */}
       <div className="mb-2 space-y-2">
         <div
           className="h-6 rounded-lg animate-pulse"
@@ -19,16 +18,13 @@ const FormLoader = () => {
         ></div>
       </div>
 
-      {/* Content skeleton - form fields */}
       <div className="flex-1 space-y-4">
         {[1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="space-y-2">
-            {/* Field label */}
             <div
               className="h-4 rounded-lg w-2/5 animate-pulse"
               style={{ backgroundColor: "rgba(128,128,128,0.3)" }}
             ></div>
-            {/* Field option/checkbox items */}
             <div className="space-y-2 pl-2">
               {[1, 2, 3].map((j) => (
                 <div key={j} className="flex items-center gap-3">
@@ -47,7 +43,6 @@ const FormLoader = () => {
         ))}
       </div>
 
-      {/* Buttons skeleton */}
       <div className="flex gap-3 justify-between mt-4">
         <div
           className="px-4 py-2 rounded-lg w-20 animate-pulse"

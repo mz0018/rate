@@ -27,13 +27,20 @@ const ServiceRatingForm = ({
 
   const handleNext = () => {
     if (isLastStep) {
+      // Build an array of rating objects with id, name, and numeric value
+      const ratingsArray = serviceRatings.map((r) => ({
+        id: r.id,
+        name: r.name,
+        value: ratings[r.id] ?? null,
+      }));
+
       const completeFormData = {
         selectedOffice,
         selectedServices,
         otherServiceText,
         demographics,
         addressDetails,
-        serviceRatings: ratings,
+        serviceRatings: ratingsArray,
       };
       console.table(completeFormData);
       onSubmit(completeFormData);
@@ -72,13 +79,14 @@ const ServiceRatingForm = ({
 
         <div className="flex justify-center gap-6">
           {currentRating.options.map((option, index) => {
-            const isSelected = ratings[currentRating.id] === option.label;
+            const isSelected = ratings[currentRating.id] === option.value;
 
             return (
               <button
                 key={`${currentRating.id}-${index}`}
                 onClick={() => handleRatingSelect(option)}
                 className="flex flex-col items-center"
+                type="button"
               >
                 <span
                   className={`text-4xl transition-transform duration-300 ${
@@ -98,7 +106,7 @@ const ServiceRatingForm = ({
 
         {ratings[currentRating.id] && (
           <p className="text-center mt-4 text-sm">
-            Selected: {ratings[currentRating.id]}
+            Selected: {currentRating.options.find(o => o.value === ratings[currentRating.id])?.label || ratings[currentRating.id]}
           </p>
         )}
       </div>

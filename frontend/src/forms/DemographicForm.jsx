@@ -53,7 +53,6 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
     }
   };
 
-  // Determine if Next should be enabled for the current step
   const currentSelections = selectedOptions[currentCategory.id] || [];
   const hasSelection = currentSelections.length > 0;
   let allAddressFilled = true;
