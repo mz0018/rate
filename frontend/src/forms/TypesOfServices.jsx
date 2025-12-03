@@ -28,21 +28,28 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
   const [checkedServices, setCheckedServices] = useState([]);
   const [otherServiceText, setOtherServiceText] = useState("");
 
+  // Make checkboxes act like a single-select (radio) control:
+  // - selecting an option replaces any previous selection
+  // - unselecting the currently selected option clears selection
+  // - keep the "please specify" input behavior (clear text when deselected or when switching away)
   const handleCheckboxChange = (id, name) => {
     setCheckedServices((prev) => {
       const serviceObj = { id, name };
       const isSelected = prev.some((s) => s.id === id);
-      
+
       if (isSelected) {
-        return prev.filter((s) => s.id !== id);
+        // deselect -> clear all
+        setOtherServiceText("");
+        return [];
       } else {
-        return [...prev, serviceObj];
+        // select this one, replace any existing selection
+        if (!name.toLowerCase().includes("please specify")) {
+          // switching to a non-specify option clears other text
+          setOtherServiceText("");
+        }
+        return [serviceObj];
       }
     });
-    
-    if (checkedServices.some((s) => s.id === id)) {
-      setOtherServiceText("");
-    }
   };
 
   const handleGoBack = () => setSelectedOffice(null);

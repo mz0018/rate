@@ -14,15 +14,25 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
   const isAddressStep = currentCategory.id === 4;
 
   const handleCheckboxChange = (option) => {
-    setSelectedOptions((prev) => {
-      const categorySelections = prev[currentCategory.id] || [];
-      const isSelected = categorySelections.includes(option);
-      return {
-        ...prev,
-        [currentCategory.id]: isSelected
-          ? categorySelections.filter((item) => item !== option)
-          : [...categorySelections, option],
-      };
+    // enforce single selection per category (keep array shape for compatibility)
+    const prevCategory = selectedOptions[currentCategory.id] || [];
+    const isSelected = prevCategory.includes(option);
+
+    setSelectedOptions((prev) => ({
+      ...prev,
+      [currentCategory.id]: isSelected ? [] : [option],
+    }));
+
+    // clean up address inputs for options in this category that are no longer selected
+    setAddressInputs((prev) => {
+      const next = { ...prev };
+      const newSelected = isSelected ? [] : [option];
+      currentCategory.options.forEach((opt) => {
+        if (!newSelected.includes(opt) && next.hasOwnProperty(opt)) {
+          delete next[opt];
+        }
+      });
+      return next;
     });
   };
 
