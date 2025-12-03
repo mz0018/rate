@@ -1,15 +1,28 @@
+import { ChevronRight } from "lucide-react";
+
 const BtnNext = ({ onClick, disabled = false }) => {
-  const base = "px-6 py-2 rounded-lg font-semibold transition-colors duration-300";
-  const enabledCls = "bg-[#0052ff] text-white hover:bg-blue-700 cursor-pointer";
-  const disabledCls = "bg-gray-400 text-gray-200 cursor-not-allowed opacity-70";
+  const base = "inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition duration-200 shadow-sm";
+  const enabledStyle = {
+    backgroundColor: "var(--text-color)",
+    color: "var(--bg-color)",
+  };
+  const disabledStyle = {
+    backgroundColor: "rgba(128,128,128,0.35)",
+    color: "rgba(255,255,255,0.8)",
+    cursor: "not-allowed",
+    opacity: 0.85,
+  };
 
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${base} ${disabled ? disabledCls : enabledCls}`}
+      className={base}
+      style={disabled ? disabledStyle : enabledStyle}
+      aria-disabled={disabled}
     >
-      Next
+      <span>Next</span>
+      <ChevronRight size={18} />
     </button>
   );
 };

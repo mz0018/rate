@@ -1,15 +1,22 @@
-import React from "react";
-import Navbar from "./components/Navbar";
-import Main from "./components/Main";
-import Footer from "./components/Footer";
+import React, { Suspense, lazy } from "react";
+
+const Navbar = lazy(() => import("./components/Navbar"));
+const Main = lazy(() => import("./components/Main"));
+const Footer = lazy(() => import("./components/Footer"));
 
 const App = () => (
   <div className="min-h-screen flex flex-col bg-green-500">
-    <Navbar />
+    <Suspense fallback={null}>
+      <Navbar />
+    </Suspense>
     <main className="flex-1 flex items-center justify-center">
-      <Main />
+      <Suspense fallback={null}>
+        <Main />
+      </Suspense>
     </main>
-    <Footer />
+    <Suspense fallback={null}>
+      <Footer />
+    </Suspense>
   </div>
 );
 

@@ -1,6 +1,7 @@
 import React, { Suspense, lazy, useState } from "react";
-import SelectOffice from "../forms/SelectOffice";
+import FormLoader from "../fallbacks/FormLoader";
 
+const SelectOffice = lazy(() => import("../forms/SelectOffice"));
 const TypesOfServices = lazy(() => import("../forms/TypesOfServices"));
 const DemographicForm = lazy(() => import("../forms/DemographicForm"));
 const ServiceRatingForm = lazy(() => import("../forms/ServiceRatingForm"));
@@ -44,11 +45,13 @@ const Main = () => {
       <div className="absolute inset-0 bg-black opacity-80"></div>
       <div className="relative z-10 space-y-4">
         {!selectedOffice && !showDemographic && (
-          <SelectOffice setSelectedOffice={setSelectedOffice} />
+          <Suspense fallback={<FormLoader />}>
+            <SelectOffice setSelectedOffice={setSelectedOffice} />
+          </Suspense>
         )}
 
         {selectedOffice && !showDemographic && !showServiceRating && (
-          <Suspense fallback={<div className="text-white">Loading services...</div>}>
+          <Suspense fallback={<FormLoader />}>
             <TypesOfServices
               selectedOffice={selectedOffice}
               setSelectedOffice={setSelectedOffice}
@@ -58,7 +61,7 @@ const Main = () => {
         )}
 
         {showDemographic && !showServiceRating && (
-          <Suspense fallback={<div className="text-white">Loading form...</div>}>
+          <Suspense fallback={<FormLoader />}>
             <DemographicForm
               onBack={() => {
                 setShowDemographic(false);
@@ -73,7 +76,7 @@ const Main = () => {
         )}
 
         {showServiceRating && (
-          <Suspense fallback={<div className="text-white">Loading rating form...</div>}>
+          <Suspense fallback={<FormLoader />}>
             <ServiceRatingForm
               onBack={handleBackFromServiceRating}
               onSubmit={handleSubmitServiceRating}
