@@ -1,6 +1,7 @@
 import { useState, lazy } from "react";
 import { demographic } from "../mocks/DemoGraphic";
-import { Check } from "lucide-react";
+import { barangays } from "../mocks/Barangay";
+import { ChevronDown, Check } from "lucide-react";
 const BtnGoBack = lazy(() => import("../buttons/BtnGoBack"));
 const BtnNext = lazy(() => import("../buttons/BtnNext"));
 
@@ -8,6 +9,7 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [addressInputs, setAddressInputs] = useState({});
+  const [openDropdowns, setOpenDropdowns] = useState({});
 
   const currentCategory = demographic[currentStep];
   const isLastStep = currentStep === demographic.length - 1;
@@ -38,6 +40,13 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
     setAddressInputs((prev) => ({
       ...prev,
       [option]: value,
+    }));
+  };
+
+  const toggleDropdown = (key) => {
+    setOpenDropdowns((prev) => ({
+      ...prev,
+      [key]: !prev[key],
     }));
   };
 
@@ -108,21 +117,72 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
                 </span>
               </label>
 
-              {/* Address input if needed */}
               {isAddressStep && selectedOptions[currentCategory.id]?.includes(option) && (
                 <div className="mt-2 sm:mt-3 ml-6 sm:ml-8">
-                  <input
-                    type="text"
-                    value={addressInputs[option] || ""}
-                    onChange={(e) => handleAddressInputChange(option, e.target.value)}
-                    placeholder={option.includes("Within") ? "Enter barangay name..." : "Enter municipality name..."}
-                    className="w-full px-2 sm:px-3 py-1 sm:py-2 rounded border text-sm sm:text-base transition-colors duration-300"
-                    style={{
-                      backgroundColor: "var(--bg-color)",
-                      borderColor: "rgba(128,128,128,0.3)",
-                      color: "var(--text-color)",
-                    }}
-                  />
+                  {option.includes("Within") ? (
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => toggleDropdown(option)}
+                        className="w-full px-2 sm:px-3 py-1 sm:py-2 rounded border text-sm sm:text-base transition-colors duration-300 flex items-center justify-between"
+                        style={{
+                          backgroundColor: "var(--bg-color)",
+                          borderColor: "rgba(128,128,128,0.3)",
+                          color: "var(--text-color)",
+                        }}
+                      >
+                        <span>{addressInputs[option] || "Select barangay..."}</span>
+                        <ChevronDown
+                          size={16}
+                          className="transition-transform duration-200"
+                          style={{
+                            transform: openDropdowns[option] ? "rotate(180deg)" : "rotate(0deg)",
+                          }}
+                        />
+                      </button>
+
+                      {openDropdowns[option] && (
+                        <div
+                          className="absolute top-full left-0 right-0 mt-1 rounded border shadow-lg z-10 max-h-48 overflow-y-auto"
+                          style={{
+                            backgroundColor: "var(--bg-color)",
+                            borderColor: "rgba(128,128,128,0.3)",
+                            color: "var(--text-color)",
+                          }}
+                        >
+                          {barangays.map((b) => (
+                            <button
+                              key={b.title}
+                              type="button"
+                              onClick={() => {
+                                handleAddressInputChange(option, b.title);
+                                toggleDropdown(option);
+                              }}
+                              className="w-full text-left px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base hover:opacity-75 transition-opacity duration-150"
+                              style={{
+                                backgroundColor: addressInputs[option] === b.title ? "rgba(0, 82, 255, 0.15)" : "transparent",
+                              }}
+                            >
+                              {b.title}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <input
+                      type="text"
+                      value={addressInputs[option] || ""}
+                      onChange={(e) => handleAddressInputChange(option, e.target.value)}
+                      placeholder={"Enter municipality name..."}
+                      className="w-full px-2 sm:px-3 py-1 sm:py-2 rounded border text-sm sm:text-base transition-colors duration-300"
+                      style={{
+                        backgroundColor: "var(--bg-color)",
+                        borderColor: "rgba(128,128,128,0.3)",
+                        color: "var(--text-color)",
+                      }}
+                    />
+                  )}
                 </div>
               )}
             </li>

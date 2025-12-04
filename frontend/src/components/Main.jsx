@@ -39,9 +39,12 @@ const Main = () => {
   return (
     <div
       className="w-full flex items-center justify-center min-h-screen relative bg-neutral-primary bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: 'url("/img/three.webp")' }}
+      style={{ backgroundImage: 'url("/img/munisipyo.jpg")' }}
     >
-      <div className="absolute inset-0 bg-black opacity-80"></div>
+      <div
+        className="absolute inset-0 opacity-80"
+        style={{ backgroundColor: "var(--overlay-color, rgba(0, 0, 0, 0.8))" }}
+      ></div>
       <div className="relative z-10 space-y-4">
         {!formHook.selectedOffice && !showDemographic && (
           <Suspense fallback={<FormLoader />}>

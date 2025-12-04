@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 :root {
+  
   --text-color: rgba(255, 255, 255, 0.87);
   --bg-color: #242424;
+  --overlay-color: rgba(0, 0, 0, 0.8);
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -19,6 +21,7 @@
 [data-theme="light"] {
   --text-color: #020403;
   --bg-color: #fcfbfc;
+  --overlay-color: rgba(0, 0, 0, 0.65);
 }
 
 body {
