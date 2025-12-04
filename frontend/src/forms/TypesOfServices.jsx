@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, lazy } from "react";
 import { offices } from "../mocks/Offices";
 import { Check } from "lucide-react";
-import BtnGoBack from "../buttons/BtnGoBack";
-import BtnNext from "../buttons/BtnNext";
+const BtnGoBack = lazy(() => import("../buttons/BtnGoBack"));
+const BtnNext = lazy(() => import("../buttons/BtnNext"));
 
 const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
   if (!selectedOffice) return null;
@@ -28,23 +28,16 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
   const [checkedServices, setCheckedServices] = useState([]);
   const [otherServiceText, setOtherServiceText] = useState("");
 
-  // Make checkboxes act like a single-select (radio) control:
-  // - selecting an option replaces any previous selection
-  // - unselecting the currently selected option clears selection
-  // - keep the "please specify" input behavior (clear text when deselected or when switching away)
   const handleCheckboxChange = (id, name) => {
     setCheckedServices((prev) => {
       const serviceObj = { id, name };
       const isSelected = prev.some((s) => s.id === id);
 
       if (isSelected) {
-        // deselect -> clear all
         setOtherServiceText("");
         return [];
       } else {
-        // select this one, replace any existing selection
         if (!name.toLowerCase().includes("please specify")) {
-          // switching to a non-specify option clears other text
           setOtherServiceText("");
         }
         return [serviceObj];
@@ -64,22 +57,24 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
   const otherOptionSelected = checkedServices.some(
     (service) => service.name.toLowerCase().includes("please specify")
   );
-  const isNextDisabled = checkedServices.length === 0 || (otherOptionSelected && otherServiceText.trim() === "");
+  const isNextDisabled =
+    checkedServices.length === 0 ||
+    (otherOptionSelected && otherServiceText.trim() === "");
 
   return (
     <div
-      className="p-6 rounded-lg shadow-lg w-150 transition-colors duration-300 flex flex-col gap-4"
+      className="p-4 sm:p-6 rounded-lg shadow-lg w-full sm:w-[350px] md:w-[450px] lg:w-[500px] transition-all duration-300 flex flex-col gap-4"
       style={{
         backgroundColor: "var(--bg-color)",
         color: "var(--text-color)",
       }}
     >
-      <h2 className="text-lg font-semibold mb-4">
+      <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
         Services for: {selectedOffice}
       </h2>
 
       {services.length > 0 ? (
-        <ul className="space-y-3">
+        <ul className="space-y-2 sm:space-y-3">
           {services.map((service) => (
             <li key={service.id}>
               <label
@@ -91,33 +86,33 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
                   type="checkbox"
                   checked={checkedServices.some((s) => s.id === service.id)}
                   onChange={() => handleCheckboxChange(service.id, service.name)}
-                  className="peer absolute w-5 h-5 opacity-0 cursor-pointer"
+                  className="peer absolute w-4 h-4 sm:w-5 sm:h-5 opacity-0 cursor-pointer"
                 />
 
                 <span
-                  className="w-5 h-5 rounded border-2 border-gray-400 dark:border-gray-300
+                  className="w-4 h-4 sm:w-5 sm:h-5 rounded border-2 border-gray-400 dark:border-gray-300
                     flex items-center justify-center transition-colors duration-300
                     peer-checked:bg-[#0052ff] peer-checked:border-[#0052ff]"
                 >
                   {checkedServices.some((s) => s.id === service.id) && (
-                    <Check className="w-4 h-4 text-white" />
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                   )}
                 </span>
 
-                <span className="ml-3" style={{ color: "var(--text-color)" }}>
+                <span className="ml-2 sm:ml-3 text-sm sm:text-base" style={{ color: "var(--text-color)" }}>
                   {service.name}
                 </span>
               </label>
 
               {service.name.includes("please specify") &&
                 checkedServices.some((s) => s.id === service.id) && (
-                  <div className="mt-3 ml-8">
+                  <div className="mt-2 sm:mt-3 ml-6 sm:ml-8">
                     <input
                       type="text"
                       value={otherServiceText}
                       onChange={(e) => setOtherServiceText(e.target.value)}
                       placeholder="Please specify your service request..."
-                      className="w-full px-3 py-2 rounded border transition-colors duration-300"
+                      className="w-full px-2 sm:px-3 py-1 sm:py-2 rounded border text-sm sm:text-base transition-colors duration-300"
                       style={{
                         backgroundColor: "var(--bg-color)",
                         borderColor: "rgba(128,128,128,0.3)",
@@ -130,10 +125,10 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
           ))}
         </ul>
       ) : (
-        <p>No services available for this office.</p>
+        <p className="text-sm sm:text-base">No services available for this office.</p>
       )}
 
-      <div className="flex gap-3 justify-between mt-4">
+      <div className="flex gap-2 sm:gap-3 justify-between mt-3 sm:mt-4">
         <BtnGoBack onClick={handleGoBack} />
         <BtnNext onClick={handleNext} disabled={isNextDisabled} />
       </div>

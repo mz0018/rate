@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, lazy } from "react";
 import { serviceRatings } from "../mocks/ServiceRatings";
-import BtnGoBack from "../buttons/BtnGoBack";
-import BtnNext from "../buttons/BtnNext";
+const BtnGoBack = lazy(() => import("../buttons/BtnGoBack"));
+const BtnNext = lazy(() => import("../buttons/BtnNext"));
 
 const ServiceRatingForm = ({
   onBack,
@@ -27,7 +27,6 @@ const ServiceRatingForm = ({
 
   const handleNext = () => {
     if (isLastStep) {
-      // Build an array of rating objects with id, name, and numeric value
       const ratingsArray = serviceRatings.map((r) => ({
         id: r.id,
         name: r.name,
@@ -51,33 +50,41 @@ const ServiceRatingForm = ({
   const isNextDisabled = !Boolean(ratings[currentRating.id]);
 
   const handleBack = () => {
-    if (currentStep === 0) {
-      onBack();
-    } else {
-      setCurrentStep((prev) => prev - 1);
-    }
+    if (currentStep === 0) onBack();
+    else setCurrentStep((prev) => prev - 1);
   };
 
   return (
     <div
-      className="p-6 rounded-lg shadow-lg w-150 transition-colors duration-300 flex flex-col gap-4"
+      className="p-4 sm:p-6 rounded-lg shadow-lg w-full sm:w-[350px] md:w-[450px] lg:w-[600px] transition-all duration-300 flex flex-col gap-4"
       style={{
         backgroundColor: "var(--bg-color)",
         color: "var(--text-color)",
       }}
     >
       <div className="mb-2">
-        <h2 className="text-lg font-semibold">Service Rating</h2>
-        <p className="text-sm opacity-75">
+        <h2 className="text-base sm:text-lg font-semibold">Service Rating</h2>
+        <p className="text-xs sm:text-sm opacity-75">
           Step {currentStep + 1} of {serviceRatings.length}
         </p>
+
+        <h2 className="text-base sm:text-lg font-semibold mt-3 sm:mt-4">
+          Legend:
+        </h2>
+        <div className="flex flex-wrap gap-2 mt-1 text-xs sm:text-sm opacity-75">
+          <span>5 - Very Satisfactory</span>
+          <span>4 - Satisfactory</span>
+          <span>3 - Neutral</span>
+          <span>2 - Unsatisfactory</span>
+          <span>1 - Very Unsatisfactory</span>
+        </div>
       </div>
 
       <div className="flex-1">
-        <h3 className="font-semibold text-base mb-2">{currentRating.name}</h3>
-        <p className="text-sm opacity-75 mb-6">{currentRating.description}</p>
+        <h3 className="font-semibold text-sm sm:text-base mb-2">{currentRating.name}</h3>
+        <p className="text-xs sm:text-sm opacity-75 mb-4 sm:mb-6">{currentRating.description}</p>
 
-        <div className="flex justify-center gap-6">
+        <div className="flex justify-center gap-4 sm:gap-6 flex-wrap">
           {currentRating.options.map((option, index) => {
             const isSelected = ratings[currentRating.id] === option.value;
 
@@ -89,15 +96,14 @@ const ServiceRatingForm = ({
                 type="button"
               >
                 <span
-                  className={`text-4xl transition-transform duration-300 ${
+                  className={`text-3xl sm:text-4xl transition-transform duration-300 ${
                     isSelected ? "scale-125" : "scale-100"
                   } hover:scale-110 cursor-pointer`}
                 >
                   {option.icon}
                 </span>
-
-                <span className="text-xs mt-2 text-center opacity-80">
-                  {option.label}
+                <span className="text-xs sm:text-sm mt-1 sm:mt-2 text-center opacity-80">
+                  {option.value}
                 </span>
               </button>
             );
@@ -105,16 +111,16 @@ const ServiceRatingForm = ({
         </div>
 
         {ratings[currentRating.id] && (
-          <p className="text-center mt-4 text-sm">
+          <p className="text-center mt-3 sm:mt-4 text-sm sm:text-base">
             Selected: {currentRating.options.find(o => o.value === ratings[currentRating.id])?.label || ratings[currentRating.id]}
           </p>
         )}
       </div>
 
-        <div className="flex gap-3 justify-between mt-4">
-          <BtnGoBack onClick={handleBack} />
-          <BtnNext onClick={handleNext} disabled={isNextDisabled} />
-        </div>
+      <div className="flex gap-2 sm:gap-3 justify-between mt-3 sm:mt-4">
+        <BtnGoBack onClick={handleBack} />
+        <BtnNext onClick={handleNext} disabled={isNextDisabled} />
+      </div>
     </div>
   );
 };

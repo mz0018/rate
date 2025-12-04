@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, lazy } from "react";
 import { demographic } from "../mocks/DemoGraphic";
 import { Check } from "lucide-react";
-import BtnGoBack from "../buttons/BtnGoBack";
-import BtnNext from "../buttons/BtnNext";
+const BtnGoBack = lazy(() => import("../buttons/BtnGoBack"));
+const BtnNext = lazy(() => import("../buttons/BtnNext"));
 
 const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, otherServiceText }) => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -14,7 +14,6 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
   const isAddressStep = currentCategory.id === 4;
 
   const handleCheckboxChange = (option) => {
-    // enforce single selection per category (keep array shape for compatibility)
     const prevCategory = selectedOptions[currentCategory.id] || [];
     const isSelected = prevCategory.includes(option);
 
@@ -23,7 +22,6 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
       [currentCategory.id]: isSelected ? [] : [option],
     }));
 
-    // clean up address inputs for options in this category that are no longer selected
     setAddressInputs((prev) => {
       const next = { ...prev };
       const newSelected = isSelected ? [] : [option];
@@ -45,10 +43,7 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
 
   const handleNext = () => {
     if (isLastStep) {
-      const demographicsData = {
-        selectedOptions,
-        addressInputs,
-      };
+      const demographicsData = { selectedOptions, addressInputs };
       onNext(demographicsData);
     } else {
       setCurrentStep((prev) => prev + 1);
@@ -56,95 +51,86 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
   };
 
   const handleBack = () => {
-    if (currentStep === 0) {
-      onBack();
-    } else {
-      setCurrentStep((prev) => prev - 1);
-    }
+    if (currentStep === 0) onBack();
+    else setCurrentStep((prev) => prev - 1);
   };
 
   const currentSelections = selectedOptions[currentCategory.id] || [];
   const hasSelection = currentSelections.length > 0;
   let allAddressFilled = true;
   if (isAddressStep && hasSelection) {
-    allAddressFilled = currentSelections.every((opt) => (addressInputs[opt] || "").trim().length > 0);
+    allAddressFilled = currentSelections.every(
+      (opt) => (addressInputs[opt] || "").trim().length > 0
+    );
   }
   const isNextDisabled = !hasSelection || (isAddressStep && !allAddressFilled);
 
   return (
     <div
-      className="p-6 rounded-lg shadow-lg w-150 transition-colors duration-300 flex flex-col gap-4"
+      className="p-4 sm:p-6 rounded-lg shadow-lg w-full sm:w-[350px] md:w-[450px] lg:w-[500px] transition-colors duration-300 flex flex-col gap-4"
       style={{
         backgroundColor: "var(--bg-color)",
         color: "var(--text-color)",
       }}
     >
       <div className="mb-2">
-        <h2 className="text-lg font-semibold">Demographic Information</h2>
-        <p className="text-sm opacity-75">
+        <h2 className="text-base sm:text-lg font-semibold">Demographic Information</h2>
+        <p className="text-xs sm:text-sm opacity-75">
           Step {currentStep + 1} of {demographic.length}
         </p>
       </div>
 
       <div className="flex-1">
-        <h3 className="font-semibold text-base mb-4">{currentCategory.name}</h3>
-        <ul className="space-y-3">
+        <h3 className="font-semibold text-sm sm:text-base mb-3 sm:mb-4">{currentCategory.name}</h3>
+        <ul className="space-y-2 sm:space-y-3">
           {currentCategory.options.map((option) => (
             <li key={`${currentCategory.id}-${option}`}>
               <label className="relative flex items-center cursor-pointer select-none">
                 <input
                   type="checkbox"
-                  checked={
-                    selectedOptions[currentCategory.id]?.includes(option) || false
-                  }
+                  checked={selectedOptions[currentCategory.id]?.includes(option) || false}
                   onChange={() => handleCheckboxChange(option)}
-                  className="peer absolute w-5 h-5 opacity-0 cursor-pointer"
+                  className="peer absolute w-4 h-4 sm:w-5 sm:h-5 opacity-0 cursor-pointer"
                 />
 
                 <span
-                  className="w-5 h-5 rounded border-2 border-gray-400 dark:border-gray-300
+                  className="w-4 h-4 sm:w-5 sm:h-5 rounded border-2 border-gray-400 dark:border-gray-300
                     flex items-center justify-center transition-colors duration-300
                     peer-checked:bg-[#0052ff] peer-checked:border-[#0052ff]"
                 >
                   {selectedOptions[currentCategory.id]?.includes(option) && (
-                    <Check className="w-4 h-4 text-white" />
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                   )}
                 </span>
 
-                <span className="ml-3" style={{ color: "var(--text-color)" }}>
+                <span className="ml-2 sm:ml-3 text-sm sm:text-base" style={{ color: "var(--text-color)" }}>
                   {option.replace("(Barangay: ____)", "").replace("(Municipality: ____)", "")}
                 </span>
               </label>
 
-              {isAddressStep &&
-                selectedOptions[currentCategory.id]?.includes(option) && (
-                  <div className="mt-3 ml-8">
-                    <input
-                      type="text"
-                      value={addressInputs[option] || ""}
-                      onChange={(e) =>
-                        handleAddressInputChange(option, e.target.value)
-                      }
-                      placeholder={
-                        option.includes("Within")
-                          ? "Enter barangay name..."
-                          : "Enter municipality name..."
-                      }
-                      className="w-full px-3 py-2 rounded border transition-colors duration-300"
-                      style={{
-                        backgroundColor: "var(--bg-color)",
-                        borderColor: "rgba(128,128,128,0.3)",
-                        color: "var(--text-color)",
-                      }}
-                    />
-                  </div>
-                )}
+              {/* Address input if needed */}
+              {isAddressStep && selectedOptions[currentCategory.id]?.includes(option) && (
+                <div className="mt-2 sm:mt-3 ml-6 sm:ml-8">
+                  <input
+                    type="text"
+                    value={addressInputs[option] || ""}
+                    onChange={(e) => handleAddressInputChange(option, e.target.value)}
+                    placeholder={option.includes("Within") ? "Enter barangay name..." : "Enter municipality name..."}
+                    className="w-full px-2 sm:px-3 py-1 sm:py-2 rounded border text-sm sm:text-base transition-colors duration-300"
+                    style={{
+                      backgroundColor: "var(--bg-color)",
+                      borderColor: "rgba(128,128,128,0.3)",
+                      color: "var(--text-color)",
+                    }}
+                  />
+                </div>
+              )}
             </li>
           ))}
         </ul>
       </div>
 
-      <div className="flex gap-3 justify-between mt-4">
+      <div className="flex gap-2 sm:gap-3 justify-between mt-3 sm:mt-4">
         <BtnGoBack onClick={handleBack} />
         <BtnNext onClick={handleNext} disabled={isNextDisabled} />
       </div>
