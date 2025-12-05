@@ -82,8 +82,8 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
         color: "var(--text-color)",
       }}
     >
-      <div className="mb-2">
-        <h2 className="text-base sm:text-lg font-semibold">Demographic Information</h2>
+      <div className="mb-2 border-b border-[var(--border-color)] pb-5">
+        <h2 className="text-base sm:text-lg font-semibold" style={{ color: "var(--heading-color)" }}>Demographic Information</h2>
         <p className="text-xs sm:text-sm opacity-75">
           Step {currentStep + 1} of {demographic.length}
         </p>

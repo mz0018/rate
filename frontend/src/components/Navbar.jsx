@@ -33,14 +33,14 @@ const Navbar = () => {
               loading="lazy"
             />
             <div className="flex flex-col">
-              <span
-                className="hidden sm:block self-start text-lg sm:text-xl lg:text-2xl font-bold tracking-wider whitespace-nowrap uppercase"
-                style={{ color: "var(--text-color)" }}
+              <h2
+                className="sm:block self-start text-lg sm:text-xl lg:text-2xl font-bold tracking-wider whitespace-nowrap uppercase"
+                style={{ color: "var(--heading-color)" }}
               >
                 Municipality of Solano
-              </span>
+              </h2>
               <span
-                className="hidden sm:block text-xs sm:text-sm lg:text-base capitalize"
+                className="sm:block text-xs sm:text-sm lg:text-base capitalize"
                 style={{ color: "var(--text-color)" }}
               >
                 Client's satisfaction and feedback form
@@ -71,7 +71,9 @@ const Navbar = () => {
       >
         <div className="p-6 space-y-6 flex flex-col items-end text-right">
           <BtnChangeTheme />
-          <BtnGoToAdmin />
+          <div className="w-full flex justify-center">
+            <BtnGoToAdmin />
+          </div>
         </div>
       </div>
 

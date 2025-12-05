@@ -62,13 +62,13 @@ const ServiceRatingForm = ({
         color: "var(--text-color)",
       }}
     >
-      <div className="mb-2">
-        <h2 className="text-base sm:text-lg font-semibold">Service Rating</h2>
+      <div className="mb-2 border-b border-[var(--border-color)] pb-5">
+        <h2 className="text-base sm:text-lg font-semibold" style={{ color: "var(--heading-color)" }}>Service Rating</h2>
         <p className="text-xs sm:text-sm opacity-75">
           Step {currentStep + 1} of {serviceRatings.length}
         </p>
 
-        <h2 className="text-base sm:text-lg font-semibold mt-3 sm:mt-4">
+        <h2 className="text-base sm:text-lg font-semibold mt-3 sm:mt-4" style={{ color: "var(--heading-color)" }}>
           Legend:
         </h2>
         <div className="flex flex-wrap gap-2 mt-1 text-xs sm:text-sm opacity-75">

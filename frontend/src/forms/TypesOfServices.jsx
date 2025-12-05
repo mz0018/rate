@@ -69,9 +69,11 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
         color: "var(--text-color)",
       }}
     >
-      <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+      <div className="mb-2 border-b border-[var(--border-color)]">
+      <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4" style={{ color: "var(--heading-color)" }}>
         Services for: {selectedOffice}
       </h2>
+      </div>
 
       {services.length > 0 ? (
         <ul className="space-y-2 sm:space-y-3">
