@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const useFormSubmission = () => {
   const [selectedOffice, setSelectedOffice] = useState(null);
@@ -8,6 +9,7 @@ const useFormSubmission = () => {
   const [demographics, setDemographics] = useState({});
   const [addressDetails, setAddressDetails] = useState({});
   const [serviceRatings, setServiceRatings] = useState({});
+  const [respondent, setRespondent] = useState({ clientName: "", clientPhone: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState({});
 
@@ -23,6 +25,10 @@ const useFormSubmission = () => {
   const updateDemographics = (demographicsData) => {
     setDemographics(demographicsData.selectedOptions || {});
     setAddressDetails(demographicsData.addressInputs || {});
+  };
+
+  const updateRespondent = (respondentData = {}) => {
+    setRespondent((prev) => ({ ...prev, ...respondentData }));
   };
 
   const updateRatings = (ratings) => {
@@ -50,6 +56,7 @@ const useFormSubmission = () => {
         employmentStatus: demographics[5] || [],
       },
       ratings: serviceRatings,
+      respondent,
       submittedAt: new Date().toISOString(),
     };
   };
@@ -62,10 +69,38 @@ const useFormSubmission = () => {
 
     try {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/client/submit`, formData);
-        // console.log("Form submitted successfully:", response.data);
-        console.log(serviceRatings)
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: `${response.data.message}`,
+        });
     } catch (error) {
-        console.error("Error submitting form:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `${error.response?.data?.message || "An error occurred while submitting the form."}`,
+          footer: '<a id="why-issue" href="#">Why do I have this issue?</a>'
+        });
+
+        setTimeout(() => {
+          const link = document.getElementById("why-issue");
+          if (link) {
+            link.addEventListener("click", () => {
+              Swal.fire({
+                icon: "info",
+                title: "Possible Causes",
+                html: `
+                  <ul style="text-align:left;">
+                    <li>Server is down</li>
+                    <li>API URL is incorrect</li>
+                    <li>Missing or invalid data</li>
+                    <li>Backend validation failed</li>
+                  </ul>
+                `
+              });
+            });
+          }
+        }, 50);
         debugger;
     } finally {
         setIsLoading(false);
@@ -87,6 +122,7 @@ const useFormSubmission = () => {
     otherServiceText,
     demographics,
     addressDetails,
+    respondent,
     serviceRatings,
   });
 
@@ -105,6 +141,8 @@ const useFormSubmission = () => {
     resetForm,
     getCompleteFormData,
     getFormState,
+    respondent,
+    updateRespondent,
   };
 };
 

@@ -22,6 +22,13 @@ const SelectOffice = ({ setSelectedOffice }) => {
       )
   );
 
+  // Find the selected office object to get its icon
+  const selectedOfficeObj = offices.find(
+    (office) =>
+      selected.startsWith(office.name) // handles office or section selection
+  );
+  const SelectedIcon = selectedOfficeObj?.icon;
+
   return (  
     <div className="relative w-[250px] sm:w-[480px] md:w-[500px] lg:w-[600px] transition-all duration-300 ease-in-out">
       <label className="block mb-2 font-semibold text-white text-sm sm:text-base">
@@ -85,6 +92,7 @@ const SelectOffice = ({ setSelectedOffice }) => {
                     className="p-2 sm:p-3 cursor-pointer rounded hover:bg-gray-200/20 transition-colors duration-150 text-sm sm:text-base"
                     onClick={() => handleSelect(office.name)}
                   >
+                    {office.icon && <office.icon className="inline-block mr-2 text-blue-400" />}
                     {office.name}
                   </div>
                 )}
@@ -96,6 +104,7 @@ const SelectOffice = ({ setSelectedOffice }) => {
                       className="pl-4 sm:pl-6 p-2 sm:p-3 cursor-pointer rounded hover:bg-gray-200/20 transition-colors duration-150 text-xs sm:text-sm"
                       onClick={() => handleSelect(`${office.name} - ${section.name}`)}
                     >
+                      {office.icon && <office.icon className="inline-block mr-2 text-blue-300" />}
                       {section.name}
                     </div>
                   ))}
@@ -108,7 +117,8 @@ const SelectOffice = ({ setSelectedOffice }) => {
       )}
 
       {selected && (
-        <p className="mt-2 text-white text-sm sm:text-base">
+        <p className="mt-2 text-white text-sm sm:text-base flex items-center gap-2">
+          {SelectedIcon && <SelectedIcon className="text-lg text-blue-400" />}
           You selected: <strong>{selected}</strong>
         </p>
       )}

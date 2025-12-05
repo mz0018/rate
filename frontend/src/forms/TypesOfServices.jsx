@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 const BtnGoBack = lazy(() => import("../buttons/BtnGoBack"));
 const BtnNext = lazy(() => import("../buttons/BtnNext"));
 
-const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
+const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext, onBack }) => {
   if (!selectedOffice) return null;
 
   const officeObj = offices.find(
@@ -45,7 +45,10 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
     });
   };
 
-  const handleGoBack = () => setSelectedOffice(null);
+  const handleGoBack = () => {
+    // setSelectedOffice(null);
+    if (onBack) onBack();
+  }
 
   const handleNext = () => {
     onNext({
@@ -69,10 +72,26 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext }) => {
         color: "var(--text-color)",
       }}
     >
-      <div className="mb-2 border-b border-[var(--border-color)]">
-      <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4" style={{ color: "var(--heading-color)" }}>
-        Services for: {selectedOffice}
-      </h2>
+      <div className="mb-2 border-b border-[var(--border-color)] pb-5">
+        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4" style={{ color: "var(--heading-color)" }}>
+          Services for: {selectedOffice}
+        </h2>
+        <div
+          className="flex items-start gap-2 p-3 rounded-md"
+          style={{
+            border: `1px solid var(--border-warning-color)`,
+            backgroundColor: `var(--border-bg-warning-color)`
+          }}
+        >
+
+          <p
+            className="text-xs sm:text-sm font-medium"
+            style={{ color: "var(--text-warning-color)" }}
+          >
+            Please check appropriate boxes.
+          </p>
+        </div>
+
       </div>
 
       {services.length > 0 ? (

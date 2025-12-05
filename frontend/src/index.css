@@ -5,8 +5,9 @@
   --text-color: rgba(255, 255, 255, 0.87);
   --bg-color: #242424;
   --overlay-color: rgba(0, 0, 0, 0.8);
-  --heading-color: rgba(255, 255, 255, 0.87);
-  --border-color: rgba(255, 255, 255, 0.25);
+  --border-warning-color: #f59e0b;    /* amber-500 */
+  --border-bg-warning-color: #78350f33; /* amber-900 with opacity */
+  --text-warning-color: #fbbf24; 
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -21,11 +22,14 @@
 }
 
 [data-theme="light"] {
-  --text-color: #718096;
+  --text-color: #4B5563;
   --bg-color: #fcfbfc;
   --overlay-color: rgba(0, 0, 0, 0.65);
-  --heading-color: #2c7a7b;
-  --border-color: rgba(0, 0, 0, 0.2);
+  --heading-color: #628dec;
+  --border-color: #d5d4d4;
+  --border-warning-color: #FDE047;  
+  --border-bg-warning-color: #FEFCE8; 
+  --text-warning-color: #A16207;
 }
 
 body {

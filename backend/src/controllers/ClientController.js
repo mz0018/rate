@@ -6,7 +6,9 @@ class ClientController {
     async saveFeedback(req, res) {
         try {
             const feedbackData = req.body;
-            
+
+            console.log("Respondent Name:", feedbackData.respondent?.clientName || "N/A");
+            console.log("Respondent Phone:", feedbackData.respondent?.clientPhone || "N/A");            
             console.log("Selected Office:",feedbackData.selectedOffice);
             const servicesInfo = feedbackData.services?.selected?.map(s => `[ID: ${s.id}] ${s.name}`).join(", ") || "None";
             console.log("Selected Services:", servicesInfo);
