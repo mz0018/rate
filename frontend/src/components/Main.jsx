@@ -29,7 +29,7 @@ const Main = () => {
 
   const handleBackFromRespondent = () => {
     setShowRespondent(false);
-    formHook.updateOffice(null);
+    // formHook.updateOffice(null);
   };
 
   // TYPES OF SERVICES -> DEMOGRAPHIC
@@ -102,7 +102,7 @@ const Main = () => {
             <DemographicForm
               onBack={() => {
                 setShowDemographic(false);
-                formHook.updateOffice(null);
+                // formHook.updateOffice(null);
               }}
               onNext={handleGoToServiceRating}
               selectedOffice={formHook.selectedOffice}
