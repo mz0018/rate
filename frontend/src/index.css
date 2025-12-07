@@ -5,8 +5,8 @@
   --text-color: rgba(255, 255, 255, 0.87);
   --bg-color: #242424;
   --overlay-color: rgba(0, 0, 0, 0.8);
-  --border-warning-color: #f59e0b;    /* amber-500 */
-  --border-bg-warning-color: #78350f33; /* amber-900 with opacity */
+  --border-warning-color: #f59e0b;
+  --border-bg-warning-color: #78350f33;
   --text-warning-color: #fbbf24; 
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
