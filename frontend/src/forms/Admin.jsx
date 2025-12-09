@@ -6,16 +6,46 @@ const Admin = () => {
   const [visible, setVisible] = useState(false);
 
   return (
-    <section className="w-full h-screen grid grid-cols-1 md:grid-cols-2">
-      
-      {/* Left side*/}
-      <div className="bg-[#628dec] hidden md:block"></div>
+    <section
+      className="w-full grid grid-cols-1 md:grid-cols-2 bg-no-repeat bg-center bg-cover"
+      style={{ backgroundImage: 'url("/img/munisipyo.jpg")' }}
+    >
+     <div className="hidden md:flex items-center px-6 h-full relative">
+        <div className="absolute inset-0 bg-gray-900 opacity-90 z-0"></div>
+
+        <div className="flex items-center gap-6 relative z-10">
+          <img
+            src="/img/logo.png"
+            alt="Admin Login Background"
+            className="w-24 h-24 object-cover"
+          />
+
+          <div>
+            <h2
+              className="sm:block self-start text-lg sm:text-xl lg:text-2xl font-bold tracking-wider whitespace-nowrap uppercase"
+              style={{ color: "var(--heading-color)" }}
+            >
+              Municipality of Solano
+            </h2>
+            <span
+              className="sm:block text-xs sm:text-sm lg:text-base capitalize text-white"
+            >
+              Province of Nueva Vizcaya
+            </span>
+            <span
+              className="sm:block text-xs sm:text-sm lg:text-base capitalize text-gray-400"
+            >
+              Client's satisfaction and feedback form
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* Right side*/}
       <div className="bg-[var(--bg-color)] min-h-screen flex items-center justify-center">
-        <form action="/admin-login" method="POST" className="w-full lg:w-2/3 px-2 space-y-4">
+        <form action="/admin-login" method="POST" className="w-full lg:w-2/3 px-2 space-y-5">
           
-          <h2 className="text-xl font-semibold">Login</h2>
+          <h2 className="text-5xl">Log In</h2>
           <p className="text-gray-600 text-sm">
             Enter your username and password to securely access your account.
           </p>

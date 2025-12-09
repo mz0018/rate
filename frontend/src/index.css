@@ -3,7 +3,7 @@
 
 :root {
   --text-color: rgba(255, 255, 255, 0.87);
-  --bg-color: #242424;
+  --bg-color: #1e1e1e;
   --overlay-color: rgba(0, 0, 0, 0.8);
   --border-warning-color: #f59e0b;
   --border-bg-warning-color: #78350f33;
@@ -22,7 +22,7 @@
 }
 
 [data-theme="light"] {
-  --text-color: #4B5563;
+  --text-color: #424b57;
   --bg-color: #fcfbfc;
   --overlay-color: rgba(0, 0, 0, 0.65);
   --heading-color: #628dec;
