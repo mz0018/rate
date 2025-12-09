@@ -73,7 +73,7 @@ const Main = () => {
           </Suspense>
         )}
 
-        {/* RESPONDENT PROFILE (AFTER OFFICE) */}
+        {/* RESPONDENT PROFILE */}
         {showRespondent && (
           <Suspense fallback={<FormLoader />}>
             <RespondentProfile

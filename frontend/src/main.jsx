@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 
-const Admin = lazy(() => import("./components/Admin.jsx"));
+const Admin = lazy(() => import("./forms/Admin.jsx"));
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
