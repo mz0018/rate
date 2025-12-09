@@ -78,7 +78,7 @@ const Admin = () => {
             </label>
           </div>
 
-          <p className="text-sm text-blue-700 hover:underline cursor-pointer text-center">
+          <p className="text-sm text-blue-700 hover:font-semibold cursor-pointer text-center tracking-widest">
             Forgot your password?
           </p>
 

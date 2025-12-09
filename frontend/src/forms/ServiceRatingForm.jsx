@@ -96,13 +96,18 @@ const ServiceRatingForm = ({
                 type="button"
               >
                 <span
-                  className={`text-3xl sm:text-4xl transition-transform duration-300 ${
-                    isSelected ? "scale-125" : "scale-100"
-                  } hover:scale-110 cursor-pointer`}
+                  className={`
+                    text-5xl sm:text-6xl
+                    transition-transform duration-300 
+                    ${isSelected ? "scale-125 mb-3" : "scale-100 mb-2"}
+                    hover:scale-110 
+                    cursor-pointer
+                  `}
                 >
                   {option.icon}
                 </span>
-                <span className="text-xs sm:text-sm mt-1 sm:mt-2 text-center opacity-80">
+
+                <span className="text-xs sm:text-sm text-center opacity-80">
                   {option.value}
                 </span>
               </button>
