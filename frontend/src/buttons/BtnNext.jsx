@@ -1,6 +1,8 @@
 import { ChevronRight } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 const BtnNext = ({ onClick, disabled = false }) => {
+  const { language } = useLanguage();
   const base = "inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition duration-200 shadow-sm";
   const enabledStyle = {
     backgroundColor: "var(--text-color)",
@@ -21,7 +23,7 @@ const BtnNext = ({ onClick, disabled = false }) => {
       style={disabled ? disabledStyle : enabledStyle}
       aria-disabled={disabled}
     >
-      <span>Next</span>
+      <span>{language === "en" ? "Next" : "Susunod"}</span>
       <ChevronRight size={18} />
     </button>
   );

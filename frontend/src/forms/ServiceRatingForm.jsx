@@ -1,5 +1,6 @@
 import { useState, lazy } from "react";
 import { serviceRatings } from "../mocks/ServiceRatings";
+import { useLanguage } from "../context/LanguageContext"; // Import the Language Context hook
 const BtnGoBack = lazy(() => import("../buttons/BtnGoBack"));
 const BtnNext = lazy(() => import("../buttons/BtnNext"));
 
@@ -12,12 +13,14 @@ const ServiceRatingForm = ({
   demographics,
   addressDetails,
 }) => {
+  const { language } = useLanguage(); // Access the current language (en or tl)
   const [currentStep, setCurrentStep] = useState(0);
   const [ratings, setRatings] = useState({});
 
   const currentRating = serviceRatings[currentStep];
   const isLastStep = currentStep === serviceRatings.length - 1;
 
+  // Handle rating selection
   const handleRatingSelect = (option) => {
     setRatings((prev) => ({
       ...prev,
@@ -25,11 +28,12 @@ const ServiceRatingForm = ({
     }));
   };
 
+  // Handle moving to the next step or submitting the form
   const handleNext = () => {
     if (isLastStep) {
       const ratingsArray = serviceRatings.map((r) => ({
         id: r.id,
-        name: r.name,
+        name: r.name[language] || r.name.en, // Dynamically use the language (en or tl)
         value: ratings[r.id] ?? null,
       }));
 
@@ -47,6 +51,7 @@ const ServiceRatingForm = ({
       setCurrentStep((prev) => prev + 1);
     }
   };
+
   const isNextDisabled = !Boolean(ratings[currentRating.id]);
 
   const handleBack = () => {
@@ -56,33 +61,39 @@ const ServiceRatingForm = ({
 
   return (
     <div
-      className="p-4 sm:p-6 rounded-lg shadow-lg w-full sm:w-[350px] md:w-[450px] lg:w-[600px] transition-all duration-300 flex flex-col gap-4"
+      className="p-4 sm:p-6 rounded-lg shadow-lg w-full sm:w-[450px] md:w-[550px] lg:w-[700px] transition-all duration-300 flex flex-col gap-4"
       style={{
         backgroundColor: "var(--bg-color)",
         color: "var(--text-color)",
       }}
     >
       <div className="mb-2 border-b border-[var(--border-color)] pb-5">
-        <h2 className="text-base sm:text-lg font-semibold" style={{ color: "var(--heading-color)" }}>Service Rating</h2>
+        <h2 className="text-base sm:text-lg font-semibold" style={{ color: "var(--heading-color)" }}>
+          {currentRating.name[language] || currentRating.name.en}
+        </h2>
         <p className="text-xs sm:text-sm opacity-75">
-          Step {currentStep + 1} of {serviceRatings.length}
+          {language === "en" ? `Step ${currentStep + 1} of ${serviceRatings.length}` : `Hakbang ${currentStep + 1} ng ${serviceRatings.length}`}
         </p>
 
         <h2 className="text-base sm:text-lg font-semibold mt-3 sm:mt-4" style={{ color: "var(--heading-color)" }}>
           Legend:
         </h2>
         <div className="flex flex-wrap gap-2 mt-1 text-xs sm:text-sm opacity-75">
-          <span>5 - Very Satisfactory</span>
-          <span>4 - Satisfactory</span>
-          <span>3 - Neutral</span>
-          <span>2 - Unsatisfactory</span>
-          <span>1 - Very Unsatisfactory</span>
+          <span>{language === "en" ? "5 - Very Satisfactory" : "5 - Napakabuti"}</span>
+          <span>{language === "en" ? "4 - Satisfactory" : "4 - Katanggap-tanggap"}</span>
+          <span>{language === "en" ? "3 - Neutral" : "3 - Neutral"}</span>
+          <span>{language === "en" ? "2 - Unsatisfactory" : "2 - Hindi Katanggap-tanggap"}</span>
+          <span>{language === "en" ? "1 - Very Unsatisfactory" : "1 - Napakasama"}</span>
         </div>
       </div>
 
       <div className="flex-1">
-        <h3 className="font-semibold text-sm sm:text-base mb-2">{currentRating.name}</h3>
-        <p className="text-xs sm:text-sm opacity-75 mb-4 sm:mb-6">{currentRating.description}</p>
+        <h3 className="font-semibold text-sm sm:text-base mb-2">
+          {currentRating.name[language] || currentRating.name.en}
+        </h3>
+        <p className="text-xs sm:text-sm opacity-75 mb-4 sm:mb-6">
+          {currentRating.description[language] || currentRating.description.en}
+        </p>
 
         <div className="flex justify-center gap-4 sm:gap-6 flex-wrap">
           {currentRating.options.map((option, index) => {
@@ -108,7 +119,7 @@ const ServiceRatingForm = ({
                 </span>
 
                 <span className="text-xs sm:text-sm text-center opacity-80">
-                  {option.value}
+                  {option.label[language] || option.label.en}
                 </span>
               </button>
             );
@@ -116,9 +127,28 @@ const ServiceRatingForm = ({
         </div>
 
         {ratings[currentRating.id] && (
-          <p className="text-center mt-3 sm:mt-4 text-sm sm:text-base">
-            Selected: {currentRating.options.find(o => o.value === ratings[currentRating.id])?.label || ratings[currentRating.id]}
-          </p>
+          <div
+            className="flex items-center justify-center text-center gap-2 p-3 rounded-md"
+            style={{
+              border: `1px solid var(--border-warning-color)`,
+              backgroundColor: `var(--border-bg-warning-color)`,
+            }}
+          >
+            <p
+              className="text-xs sm:text-sm font-medium"
+              style={{ color: "var(--text-warning-color)" }}
+            >
+              {
+                (() => {
+                  const selectedOption = currentRating.options.find(o => o.value === ratings[currentRating.id]);
+                  const label = selectedOption ? selectedOption.label[language] : ratings[currentRating.id];
+                  return language === "en" 
+                    ? `Selected: ${label}` 
+                    : `Napili: ${label}`;
+                })()
+              }
+            </p>
+          </div>
         )}
       </div>
 

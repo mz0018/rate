@@ -1,8 +1,10 @@
 import { useState, lazy } from "react";
+import { useLanguage } from "../context/LanguageContext";
 const BtnGoBack = lazy(() => import("../buttons/BtnGoBack"));
 const BtnNext = lazy(() => import("../buttons/BtnNext"));
 
 const OtherSuggestions = ({ onBack, onSave, onSkip, defaultText = "" }) => {
+  const { language } = useLanguage();
   const [text, setText] = useState(defaultText);
   const isSaveDisabled = false;
 
@@ -15,15 +17,20 @@ const OtherSuggestions = ({ onBack, onSave, onSkip, defaultText = "" }) => {
       }}
     >
       <div className="mb-2 border-b border-[var(--border-color)] pb-5">
-        <h2 className="text-base sm:text-lg font-semibold" style={{ color: "var(--heading-color)" }}>Other Suggestions (optional)</h2>
-        <p className="text-xs sm:text-sm opacity-75 mt-1">If you have suggestions or comments about the service, you may leave them here. This is optional.</p>
+        <h2 className="text-base sm:text-lg font-semibold" style={{ color: "var(--heading-color)" }}>{language === "en" ? "Other Suggestions (optional)" : "Iba pang Mga Mungkahi (opsyonal)"}
+        </h2>
+        <p className="text-xs sm:text-sm opacity-75 mt-1">
+          {language === "en" ? 
+            "If you have suggestions or comments about the service, you may leave them here. This is optional." : 
+            "Kung mayroon kang mga mungkahi o komento tungkol sa serbisyo, maaari mo itong ilagay dito. Opsyonal ito."}
+        </p>
       </div>
 
       <div className="flex-1">
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Write your suggestion... (optional)"
+          placeholder={language === "en" ? "Write your suggestion... (optional)" : "Isulat ang iyong mungkahi... (opsyonal)"}
           className="w-full min-h-[120px] p-3 rounded border border-[var(--border-color)] bg-[var(--input-bg)]"
         />
       </div>

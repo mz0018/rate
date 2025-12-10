@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { offices } from "../mocks/Offices";
+import { useLanguage } from "../context/LanguageContext";
 
 const SelectOffice = ({ setSelectedOffice }) => {
+  const { language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("");
   const [search, setSearch] = useState("");
@@ -22,17 +24,16 @@ const SelectOffice = ({ setSelectedOffice }) => {
       )
   );
 
-  // Find the selected office object to get its icon
   const selectedOfficeObj = offices.find(
     (office) =>
-      selected.startsWith(office.name) // handles office or section selection
+      selected.startsWith(office.name)
   );
   const SelectedIcon = selectedOfficeObj?.icon;
 
   return (  
     <div className="relative w-[250px] sm:w-[480px] md:w-[500px] lg:w-[600px] transition-all duration-300 ease-in-out">
       <label className="block mb-2 font-semibold text-white text-sm sm:text-base">
-        Select an Office
+        {language === "en" ? "Select an Office" : "Mamili ng Office"}
       </label>
 
       <div
@@ -51,7 +52,7 @@ const SelectOffice = ({ setSelectedOffice }) => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search..."
+              placeholder={language === "en" ? "Search..." : "Hanpin..."}
               className="w-full pl-7 py-1 sm:py-2 bg-transparent outline-none text-sm sm:text-base"
               style={{ color: "var(--text-color)" }}
             />
@@ -61,7 +62,7 @@ const SelectOffice = ({ setSelectedOffice }) => {
             onClick={() => setOpen(true)}
             className="w-full cursor-pointer text-sm sm:text-base"
           >
-            {selected || "-- Choose an office --"}
+            {selected || language === "en" ? "-- Choose an office --" : "Mamili ng Opisina"}
           </span>
         )}
 

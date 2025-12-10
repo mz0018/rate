@@ -1,10 +1,13 @@
 import { useState, lazy } from "react";
 import { offices } from "../mocks/Offices";
 import { Check } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 const BtnGoBack = lazy(() => import("../buttons/BtnGoBack"));
 const BtnNext = lazy(() => import("../buttons/BtnNext"));
 
 const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext, onBack }) => {
+  const { language } = useLanguage();
+
   if (!selectedOffice) return null;
 
   const officeObj = offices.find(
@@ -37,7 +40,7 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext, onBack }) 
         setOtherServiceText("");
         return [];
       } else {
-        if (!name.toLowerCase().includes("please specify")) {
+        if (!name.toLowerCase().includes("please specify") && !name.toLowerCase().includes("paki-tukoy")) {
           setOtherServiceText("");
         }
         return [serviceObj];
@@ -46,9 +49,8 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext, onBack }) 
   };
 
   const handleGoBack = () => {
-    // setSelectedOffice(null);
     if (onBack) onBack();
-  }
+  };
 
   const handleNext = () => {
     onNext({
@@ -58,7 +60,9 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext, onBack }) 
   };
 
   const otherOptionSelected = checkedServices.some(
-    (service) => service.name.toLowerCase().includes("please specify")
+    (service) =>
+      service.name.toLowerCase().includes("please specify") ||
+      service.name.toLowerCase().includes("paki-tukoy")
   );
   const isNextDisabled =
     checkedServices.length === 0 ||
@@ -74,24 +78,22 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext, onBack }) 
     >
       <div className="mb-2 border-b border-[var(--border-color)] pb-5">
         <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4" style={{ color: "var(--heading-color)" }}>
-          Services for: {selectedOffice}
+          {officeObj.name}
         </h2>
         <div
           className="flex items-start gap-2 p-3 rounded-md"
           style={{
             border: `1px solid var(--border-warning-color)`,
-            backgroundColor: `var(--border-bg-warning-color)`
+            backgroundColor: `var(--border-bg-warning-color)`,
           }}
         >
-
           <p
             className="text-xs sm:text-sm font-medium"
             style={{ color: "var(--text-warning-color)" }}
           >
-            Please check appropriate boxes.
+            {language === "en" ? "Please check appropriate boxes." : "Pakisuyong markahan ang mga tamang kahon."}
           </p>
         </div>
-
       </div>
 
       {services.length > 0 ? (
@@ -106,7 +108,7 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext, onBack }) 
                   id={`service-${service.id}`}
                   type="checkbox"
                   checked={checkedServices.some((s) => s.id === service.id)}
-                  onChange={() => handleCheckboxChange(service.id, service.name)}
+                  onChange={() => handleCheckboxChange(service.id, service.name[language])}
                   className="peer absolute w-4 h-4 sm:w-5 sm:h-5 opacity-0 cursor-pointer"
                 />
 
@@ -121,27 +123,34 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext, onBack }) 
                 </span>
 
                 <span className="ml-2 sm:ml-3 text-sm sm:text-base" style={{ color: "var(--text-color)" }}>
-                  {service.name}
+                  {service.name[language]}
                 </span>
               </label>
 
-              {service.name.includes("please specify") &&
-                checkedServices.some((s) => s.id === service.id) && (
-                  <div className="mt-2 sm:mt-3 ml-6 sm:ml-8">
-                    <input
-                      type="text"
-                      value={otherServiceText}
-                      onChange={(e) => setOtherServiceText(e.target.value)}
-                      placeholder="Please specify your service request..."
-                      className="w-full px-2 sm:px-3 py-1 sm:py-2 rounded border text-sm sm:text-base transition-colors duration-300"
-                      style={{
-                        backgroundColor: "var(--bg-color)",
-                        borderColor: "rgba(128,128,128,0.3)",
-                        color: "var(--text-color)",
-                      }}
-                    />
-                  </div>
-                )}
+              {checkedServices.some((s) => s.id === service.id) && (
+                <>
+                  {/* Check if "Please specify" or "Paki-tukoy" is selected */}
+                  {(service.name[language].toLowerCase().includes("please specify") ||
+                    service.name[language].toLowerCase().includes("paki-tukoy")) && (
+                    <div className="mt-2 sm:mt-3 ml-6 sm:ml-8">
+                      <input
+                        type="text"
+                        value={otherServiceText}
+                        onChange={(e) => setOtherServiceText(e.target.value)}
+                        placeholder={
+                          language === "en" ? "Please specify your service request..." : "Paki-tukoy ang iyong serbisyo..."
+                        }
+                        className="w-full px-2 sm:px-3 py-1 sm:py-2 rounded border text-sm sm:text-base transition-colors duration-300"
+                        style={{
+                          backgroundColor: "var(--bg-color)",
+                          borderColor: "rgba(128,128,128,0.3)",
+                          color: "var(--text-color)",
+                        }}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
             </li>
           ))}
         </ul>

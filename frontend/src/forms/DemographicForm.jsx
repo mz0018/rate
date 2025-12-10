@@ -1,11 +1,14 @@
 import { useState, lazy } from "react";
-import { demographic } from "../mocks/DemoGraphic";
+import { demographic } from "../mocks/DemoGraphic"; // Import updated data
 import { barangays } from "../mocks/Barangay";
 import { ChevronDown, Check } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext"; // Import Language Context
+
 const BtnGoBack = lazy(() => import("../buttons/BtnGoBack"));
 const BtnNext = lazy(() => import("../buttons/BtnNext"));
 
 const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, otherServiceText }) => {
+  const { language } = useLanguage(); // Get current language
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [addressInputs, setAddressInputs] = useState({});
@@ -74,6 +77,10 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
   }
   const isNextDisabled = !hasSelection || (isAddressStep && !allAddressFilled);
 
+  const getWithinLabel = () => {
+    return language === "en" ? "Within" : "Sa loob ng";
+  };
+
   return (
     <div
       className="p-4 sm:p-6 rounded-lg shadow-lg w-full sm:w-[350px] md:w-[450px] lg:w-[500px] transition-colors duration-300 flex flex-col gap-4"
@@ -83,47 +90,47 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
       }}
     >
       <div className="mb-2 border-b border-[var(--border-color)] pb-5">
-        <h2 className="text-base sm:text-lg font-semibold" style={{ color: "var(--heading-color)" }}>Demographic Information</h2>
+        <h2 className="text-base sm:text-lg font-semibold" style={{ color: "var(--heading-color)" }}>
+          {currentCategory.name[language]}
+        </h2>
         <p className="text-xs sm:text-sm opacity-75">
-          Step {currentStep + 1} of {demographic.length}
+          {language === "en" ? `Step ${currentStep + 1} of ${demographic.length}` : `Hakbang ${currentStep + 1} ng ${demographic.length}`}
         </p>
       </div>
 
       <div className="flex-1">
-        <h3 className="font-semibold text-sm sm:text-base mb-3 sm:mb-4">{currentCategory.name}</h3>
+        <h3 className="font-semibold text-sm sm:text-base mb-3 sm:mb-4">{currentCategory.name[language]}</h3>
         <ul className="space-y-2 sm:space-y-3">
           {currentCategory.options.map((option) => (
-            <li key={`${currentCategory.id}-${option}`}>
+            <li key={`${currentCategory.id}-${option[language]}`}>
               <label className="relative flex items-center cursor-pointer select-none">
                 <input
                   type="checkbox"
-                  checked={selectedOptions[currentCategory.id]?.includes(option) || false}
-                  onChange={() => handleCheckboxChange(option)}
+                  checked={selectedOptions[currentCategory.id]?.includes(option[language]) || false}
+                  onChange={() => handleCheckboxChange(option[language])}
                   className="peer absolute w-4 h-4 sm:w-5 sm:h-5 opacity-0 cursor-pointer"
                 />
-
                 <span
                   className="w-4 h-4 sm:w-5 sm:h-5 rounded border-2 border-gray-400 dark:border-gray-300
                     flex items-center justify-center transition-colors duration-300
                     peer-checked:bg-[#0052ff] peer-checked:border-[#0052ff]"
                 >
-                  {selectedOptions[currentCategory.id]?.includes(option) && (
+                  {selectedOptions[currentCategory.id]?.includes(option[language]) && (
                     <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                   )}
                 </span>
-
                 <span className="ml-2 sm:ml-3 text-sm sm:text-base" style={{ color: "var(--text-color)" }}>
-                  {option.replace("(Barangay: ____)", "").replace("(Municipality: ____)", "")}
+                  {option[language]}
                 </span>
               </label>
 
-              {isAddressStep && selectedOptions[currentCategory.id]?.includes(option) && (
+              {isAddressStep && selectedOptions[currentCategory.id]?.includes(option[language]) && (
                 <div className="mt-2 sm:mt-3 ml-6 sm:ml-8">
-                  {option.includes("Within") ? (
+                  {option[language].includes(getWithinLabel()) ? (
                     <div className="relative">
                       <button
                         type="button"
-                        onClick={() => toggleDropdown(option)}
+                        onClick={() => toggleDropdown(option[language])}
                         className="w-full px-2 sm:px-3 py-1 sm:py-2 rounded border text-sm sm:text-base transition-colors duration-300 flex items-center justify-between"
                         style={{
                           backgroundColor: "var(--bg-color)",
@@ -131,17 +138,17 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
                           color: "var(--text-color)",
                         }}
                       >
-                        <span>{addressInputs[option] || "Select barangay..."}</span>
+                        <span>{addressInputs[option[language]] || (language === "en" ? "Select barangay..." : "Pumili ng barangay")}</span>
                         <ChevronDown
                           size={16}
                           className="transition-transform duration-200"
                           style={{
-                            transform: openDropdowns[option] ? "rotate(180deg)" : "rotate(0deg)",
+                            transform: openDropdowns[option[language]] ? "rotate(180deg)" : "rotate(0deg)",
                           }}
                         />
                       </button>
 
-                      {openDropdowns[option] && (
+                      {openDropdowns[option[language]] && (
                         <div
                           className="absolute top-full left-0 right-0 mt-1 rounded border shadow-lg z-10 max-h-48 overflow-y-auto"
                           style={{
@@ -155,12 +162,12 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
                               key={b.title}
                               type="button"
                               onClick={() => {
-                                handleAddressInputChange(option, b.title);
-                                toggleDropdown(option);
+                                handleAddressInputChange(option[language], b.title);
+                                toggleDropdown(option[language]);
                               }}
                               className="w-full text-left px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base hover:opacity-75 transition-opacity duration-150"
                               style={{
-                                backgroundColor: addressInputs[option] === b.title ? "rgba(0, 82, 255, 0.15)" : "transparent",
+                                backgroundColor: addressInputs[option[language]] === b.title ? "rgba(0, 82, 255, 0.15)" : "transparent",
                               }}
                             >
                               {b.title}
@@ -172,9 +179,9 @@ const DemographicForm = ({ onBack, onNext, selectedOffice, selectedServices, oth
                   ) : (
                     <input
                       type="text"
-                      value={addressInputs[option] || ""}
-                      onChange={(e) => handleAddressInputChange(option, e.target.value)}
-                      placeholder={"Enter municipality name..."}
+                      value={addressInputs[option[language]] || ""}
+                      onChange={(e) => handleAddressInputChange(option[language], e.target.value)}
+                      placeholder={language === "en" ? "Enter municipality name..." : "Ilagay ang pangalan ng munisipyo..."}
                       className="w-full px-2 sm:px-3 py-1 sm:py-2 rounded border text-sm sm:text-base transition-colors duration-300"
                       style={{
                         backgroundColor: "var(--bg-color)",
