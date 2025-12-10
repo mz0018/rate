@@ -10,6 +10,7 @@ const useFormSubmission = () => {
   const [addressDetails, setAddressDetails] = useState({});
   const [serviceRatings, setServiceRatings] = useState({});
   const [respondent, setRespondent] = useState({ clientName: "", clientPhone: "" });
+  const [otherSuggestions, setOtherSuggestions] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState({});
 
@@ -35,6 +36,23 @@ const useFormSubmission = () => {
     setServiceRatings(ratings);
   };
 
+  const updateOtherSuggestions = (text) => {
+    setOtherSuggestions(text);
+  };
+
+  const resetForm = () => {
+    setSelectedOffice(null);
+    setSelectedServices([]);
+    setOtherServiceText("");
+    setDemographics({});
+    setAddressDetails({});
+    setServiceRatings({});
+    setRespondent({ clientName: "", clientPhone: "" });
+    setOtherSuggestions("");
+    setHasError({});
+    setIsLoading(false);
+  };
+
   const getCompleteFormData = () => {
     return {
       selectedOffice,
@@ -57,63 +75,74 @@ const useFormSubmission = () => {
       },
       ratings: serviceRatings,
       respondent,
+      otherSuggestions,
       submittedAt: new Date().toISOString(),
     };
   };
 
-  const submitForm = async (ratingsFromComponent) => {
+  const submitForm = async (ratingsFromComponent, otherSuggestionsParam = null) => {
+    setIsLoading(true);
+
+    const base = getCompleteFormData();
     const formData = {
-      ...getCompleteFormData(),
-      ratings: ratingsFromComponent
+      ...base,
+      ratings: ratingsFromComponent,
+      otherSuggestions: otherSuggestionsParam !== null
+        ? otherSuggestionsParam
+        : base.otherSuggestions,
     };
 
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/client/submit`, formData);
-        Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: `${response.data.message}`,
-        });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/client/submit`,
+        formData
+      );
+
+      await Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: `${response.data.message}`,
+        confirmButtonText: "OK",
+      });
+
+      return { success: true };
+
     } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: `${error.response?.data?.message || "An error occurred while submitting the form."}`,
-          footer: '<a id="why-issue" href="#">Why do I have this issue?</a>'
-        });
+      setHasError(error);
 
-        setTimeout(() => {
-          const link = document.getElementById("why-issue");
-          if (link) {
-            link.addEventListener("click", () => {
-              Swal.fire({
-                icon: "info",
-                title: "Possible Causes",
-                html: `
-                  <ul style="text-align:left;">
-                    <li>Server is down</li>
-                    <li>API URL is incorrect</li>
-                    <li>Missing or invalid data</li>
-                    <li>Backend validation failed</li>
-                  </ul>
-                `
-              });
+      await Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `${error.response?.data?.message || "An error occurred while submitting the form."}`,
+        footer: '<a id="why-issue" href="#">Why do I have this issue?</a>'
+      });
+
+      setTimeout(() => {
+        const link = document.getElementById("why-issue");
+        if (link) {
+          link.addEventListener("click", () => {
+            Swal.fire({
+              icon: "info",
+              title: "Possible Causes",
+              html: `
+                <ul style="text-align:left;">
+                  <li>Server is down</li>
+                  <li>API URL is incorrect</li>
+                  <li>Missing or invalid data</li>
+                  <li>Backend validation failed</li>
+                </ul>
+              `
             });
-          }
-        }, 50);
-        debugger;
-    } finally {
-        setIsLoading(false);
-    }
-  };
+          });
+        }
+      }, 50);
 
-  const resetForm = () => {
-    setSelectedOffice(null);
-    setSelectedServices([]);
-    setOtherServiceText("");
-    setDemographics({});
-    setAddressDetails({});
-    setServiceRatings({});
+      return { success: false };
+
+      debugger;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getFormState = () => ({
@@ -124,6 +153,7 @@ const useFormSubmission = () => {
     addressDetails,
     respondent,
     serviceRatings,
+    otherSuggestions,
   });
 
   return {
@@ -133,16 +163,20 @@ const useFormSubmission = () => {
     demographics,
     addressDetails,
     serviceRatings,
+    otherSuggestions,
     updateOffice,
     updateServices,
     updateDemographics,
     updateRatings,
+    updateRespondent,
+    updateOtherSuggestions,
     submitForm,
     resetForm,
     getCompleteFormData,
     getFormState,
     respondent,
-    updateRespondent,
+    isLoading,
+    hasError,
   };
 };
 

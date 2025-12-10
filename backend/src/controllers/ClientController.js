@@ -2,26 +2,26 @@ class ClientController {
 
     constructor() {}
 
-    //check the functions on routes
     async saveFeedback(req, res) {
         try {
             const feedbackData = req.body;
 
             console.log("Respondent Name:", feedbackData.respondent?.clientName || "N/A");
             console.log("Respondent Phone:", feedbackData.respondent?.clientPhone || "N/A");            
-            console.log("Selected Office:",feedbackData.selectedOffice);
+            console.log("Selected Office:", feedbackData.selectedOffice);
+
             const servicesInfo = feedbackData.services?.selected?.map(s => `[ID: ${s.id}] ${s.name}`).join(", ") || "None";
             console.log("Selected Services:", servicesInfo);
+
             console.log("Other Service Text:", feedbackData.services?.otherText || "N/A");
             console.log("Demographics:", feedbackData.demographics?.affiliations);
             console.log("Gender:", feedbackData.demographics?.genders);
             console.log("Age Groups:", feedbackData.demographics?.ageGroups);
             console.log("Employment Status:", feedbackData.demographics?.employmentStatus);
             console.log("Address Details:", feedbackData.demographics?.addresses?.details);
-            console.log("Date Submitted", feedbackData.submittedAt);
-            
-            console.log("Service Ratings:");
+            console.log("Date Submitted:", feedbackData.submittedAt);
 
+            console.log("Service Ratings:");
             if (Array.isArray(feedbackData.ratings)) {
                 feedbackData.ratings.forEach(rating => {
                     console.log(`  ${rating.name}: ${rating.value}`);
@@ -33,6 +33,8 @@ class ClientController {
             } else {
                 console.log("No ratings found or invalid format");
             }
+
+            console.log("Other Suggestions:", feedbackData.otherSuggestions || "No suggestions provided.");
 
             res.status(200).json({ 
                 success: true, 

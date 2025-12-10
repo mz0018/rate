@@ -1,19 +1,28 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import FormLoader from "../fallbacks/FormLoader";
 import useFormSubmission from "../hooks/useFormSubmission";
 
+const Reminder = lazy(() => import("./Reminder"));
 const SelectOffice = lazy(() => import("../forms/SelectOffice"));
 const TypesOfServices = lazy(() => import("../forms/TypesOfServices"));
 const DemographicForm = lazy(() => import("../forms/DemographicForm"));
 const RespondentProfile = lazy(() => import("../forms/RespondentProfile"));
 const ServiceRatingForm = lazy(() => import("../forms/ServiceRatingForm"));
+const OtherSuggestions = lazy(() => import("../forms/OtherSuggestions")); // NEW
 
 const Main = () => {
   const formHook = useFormSubmission();
 
-  const [showRespondent, setShowRespondent] = React.useState(false);
-  const [showDemographic, setShowDemographic] = React.useState(false);
-  const [showServiceRating, setShowServiceRating] = React.useState(false);
+  const [showRespondent, setShowRespondent] = useState(false);
+  const [showDemographic, setShowDemographic] = useState(false);
+  const [showServiceRating, setShowServiceRating] = useState(false);
+  const [showOtherSuggestions, setShowOtherSuggestions] = useState(false); // NEW
+
+  const [showReminder, setShowReminder] = useState(true);
+
+  const dismissReminder = () => {
+    setShowReminder(false);
+  };
 
   // SELECT OFFICE -> RESPONDENT PROFILE
   const handleSelectOffice = (office) => {
@@ -51,7 +60,42 @@ const Main = () => {
   };
 
   const handleSubmitServiceRating = (completeData) => {
-    formHook.submitForm(completeData.serviceRatings);
+    formHook.updateRatings(completeData.serviceRatings);
+    setShowServiceRating(false);
+    setShowOtherSuggestions(true);
+  };
+
+  const handleBackFromOtherSuggestions = () => {
+    setShowOtherSuggestions(false);
+    setShowServiceRating(true);
+  };
+
+  const resetFlow = () => {
+    setShowReminder(true);
+    setShowRespondent(false);
+    setShowDemographic(false);
+    setShowServiceRating(false);
+    setShowOtherSuggestions(false);
+
+    formHook.resetForm();
+  };
+
+  const handleSkipSuggestionsAndSubmit = async () => {
+    const result = await formHook.submitForm(formHook.serviceRatings, null);
+    
+    if (result?.success) {
+      setShowOtherSuggestions(false);
+      resetFlow();
+    }
+  };
+
+  const handleSaveSuggestionsAndSubmit = async (text) => {
+    const result = await formHook.submitForm(formHook.serviceRatings, text);
+    
+    if (result?.success) {
+      setShowOtherSuggestions(false);
+      resetFlow();
+    }
   };
 
   return (
@@ -66,66 +110,89 @@ const Main = () => {
 
       <div className="relative z-10 space-y-4">
 
-        {/* SELECT OFFICE */}
-        {!formHook.selectedOffice && !showRespondent && (
+        {showReminder && (
           <Suspense fallback={<FormLoader />}>
-            <SelectOffice setSelectedOffice={handleSelectOffice} />
+            <Reminder onDismiss={dismissReminder} />
           </Suspense>
         )}
 
-        {/* RESPONDENT PROFILE */}
-        {showRespondent && (
-          <Suspense fallback={<FormLoader />}>
-            <RespondentProfile
-              onBack={handleBackFromRespondent}
-              onNext={handleRespondentNext}
-            />
-          </Suspense>
+        {!showReminder && (
+          <>
+            {/* SELECT OFFICE */}
+            {!formHook.selectedOffice && !showRespondent && (
+              <Suspense fallback={<FormLoader />}>
+                <SelectOffice setSelectedOffice={handleSelectOffice} />
+              </Suspense>
+            )}
+
+            {/* RESPONDENT PROFILE */}
+            {showRespondent && (
+              <Suspense fallback={<FormLoader />}>
+                <RespondentProfile
+                  onBack={handleBackFromRespondent}
+                  onNext={handleRespondentNext}
+                />
+              </Suspense>
+            )}
+
+            {/* TYPES OF SERVICES */}
+            {formHook.selectedOffice && !showRespondent && !showDemographic && !showServiceRating && !showOtherSuggestions && (
+              <Suspense fallback={<FormLoader />}>
+                <TypesOfServices
+                  selectedOffice={formHook.selectedOffice}
+                  onBack={() => {
+                    setShowRespondent(true);
+                  }}
+                  onNext={handleGoToDemographic}
+                />
+              </Suspense>
+            )}
+
+            {/* DEMOGRAPHIC FORM */}
+            {showDemographic && !showServiceRating && !showOtherSuggestions && (
+              <Suspense fallback={<FormLoader />}>
+                <DemographicForm
+                  onBack={() => {
+                    setShowDemographic(false);
+                    // formHook.updateOffice(null);
+                  }}
+                  onNext={handleGoToServiceRating}
+                  selectedOffice={formHook.selectedOffice}
+                  selectedServices={formHook.selectedServices}
+                  otherServiceText={formHook.otherServiceText}
+                />
+              </Suspense>
+            )}
+
+            {/* SERVICE RATING */}
+            {showServiceRating && !showOtherSuggestions && (
+              <Suspense fallback={<FormLoader />}>
+                <ServiceRatingForm
+                  onBack={handleBackFromServiceRating}
+                  onSubmit={handleSubmitServiceRating}
+                  selectedOffice={formHook.selectedOffice}
+                  selectedServices={formHook.selectedServices}
+                  otherServiceText={formHook.otherServiceText}
+                  demographics={formHook.demographics}
+                  addressDetails={formHook.addressDetails}
+                />
+              </Suspense>
+            )}
+
+            {/* OTHER SUGGESTIONS (optional) */}
+            {showOtherSuggestions && (
+              <Suspense fallback={<FormLoader />}>
+                <OtherSuggestions
+                  onBack={handleBackFromOtherSuggestions}
+                  onSkip={handleSkipSuggestionsAndSubmit}
+                  onSave={handleSaveSuggestionsAndSubmit}
+                  defaultText={formHook.otherSuggestions}
+                />
+              </Suspense>
+            )}
+          </>
         )}
 
-        {/* TYPES OF SERVICES */}
-        {formHook.selectedOffice && !showRespondent && !showDemographic && !showServiceRating && (
-          <Suspense fallback={<FormLoader />}>
-            <TypesOfServices
-              selectedOffice={formHook.selectedOffice}
-              onBack={() => {
-                setShowRespondent(true);
-              }}
-              onNext={handleGoToDemographic}
-            />
-          </Suspense>
-        )}
-
-        {/* DEMOGRAPHIC FORM */}
-        {showDemographic && !showServiceRating && (
-          <Suspense fallback={<FormLoader />}>
-            <DemographicForm
-              onBack={() => {
-                setShowDemographic(false);
-                // formHook.updateOffice(null);
-              }}
-              onNext={handleGoToServiceRating}
-              selectedOffice={formHook.selectedOffice}
-              selectedServices={formHook.selectedServices}
-              otherServiceText={formHook.otherServiceText}
-            />
-          </Suspense>
-        )}
-
-        {/* SERVICE RATING */}
-        {showServiceRating && (
-          <Suspense fallback={<FormLoader />}>
-            <ServiceRatingForm
-              onBack={handleBackFromServiceRating}
-              onSubmit={handleSubmitServiceRating}
-              selectedOffice={formHook.selectedOffice}
-              selectedServices={formHook.selectedServices}
-              otherServiceText={formHook.otherServiceText}
-              demographics={formHook.demographics}
-              addressDetails={formHook.addressDetails}
-            />
-          </Suspense>
-        )}
       </div>
     </div>
   );
