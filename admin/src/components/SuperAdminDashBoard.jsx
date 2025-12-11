@@ -1,8 +1,14 @@
-const SuperAdminDashboard = () => {
+import React, { lazy } from "react";
 
-    return (
-        <>Super Admin Dashboard</>
-    )
-}
+const BtnLogout = lazy(() => import("../buttons/BtnLogout"));
+
+const SuperAdminDashboard = () => {
+  return (
+    <>
+      <h1>Super Admin Dashboard</h1>
+      <BtnLogout />
+    </>
+  );
+};
 
 export default SuperAdminDashboard;

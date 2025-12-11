@@ -1,52 +1,36 @@
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-const useSignInHook = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+export const useSignInHook = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
     setError(null);
-    setSuccess(false);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/it/signin`, formData);
-
-      setSuccess(true);
-      console.log("Sign-In Success:", response.data);
-    } catch (error) {
-      setError("Sign-in failed. Please check your credentials.");
-      console.error("Sign-In Error:", error);
+      const response = await api.post("/it/signin", formData);
+      login(response.data.data, response.data.token);
+      navigate("/superadmin")
+    } catch (err) {
+      setError(err.response?.data?.message || "Sign-in failed");
     } finally {
       setLoading(false);
     }
   };
 
-  return {
-    formData,
-    handleInputChange,
-    handleSubmit,
-    loading,
-    error,
-    success,
-  };
+  return { formData, handleInputChange, handleSubmit, loading, error };
 };
 
 export default useSignInHook;
