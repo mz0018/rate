@@ -8,19 +8,20 @@ const App = () => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div>
-        {isSignupVisible ? (
-          <SignUp />
-        ) : (
-          <SignIn /> 
-        )}
+      <div className="min-h-screen flex flex-col items-center justify-center space-y-4">
         
-        <button className="tracking-widest font-semibold cursor-pointer hover:font-bold transition" onClick={() => setIsSignupVisible(!isSignupVisible)}>
+        {isSignupVisible ? <SignUp /> : <SignIn />}
+
+        <button
+          className="tracking-widest font-semibold text-xs cursor-pointer hover:font-bold transition"
+          onClick={() => setIsSignupVisible(!isSignupVisible)}
+        >
           {isSignupVisible ? "Go to Sign In" : "Go to Sign Up"}
         </button>
+
       </div>
     </Suspense>
   );
-}
+};
 
 export default App;
