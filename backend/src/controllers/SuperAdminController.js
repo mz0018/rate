@@ -1,4 +1,5 @@
 const Admin = require("../models/it/AdminModel");
+const OfficeAdmin = require("../models/officeAdmins/OfficeAdminModel");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 
@@ -115,6 +116,42 @@ class SuperAdminController {
             });
         }
     }
+
+    async registerUser(req, res) {
+        try {
+            const { firstName, middleName, lastName, position, username, officeId, officeName, password } = req.body;
+
+            if (!firstName || !lastName || !position || !username || !officeId || !officeName || !password)
+                return res.status(400).json({ success: false, message: "All required fields must be provided." });
+
+            if (typeof password !== "string" || password.length < 6)
+                return res.status(400).json({ success: false, message: "Password must be at least 6 characters long." });
+
+            if (await OfficeAdmin.findOne({ username }))
+                return res.status(409).json({ success: false, message: "Username already exists." });
+
+            const hashedPassword = await argon2.hash(password);
+            const savedOfficeAdmin = await new OfficeAdmin({
+                firstName: firstName.trim(), 
+                middleName: middleName?.trim() || "",
+                lastName: lastName.trim(), 
+                position: position.trim(),
+                username: username.trim(), officeId,
+                officeName: officeName.trim(), 
+                password: hashedPassword,
+                role: "office-admin"
+            }).save();
+
+            res.status(201).json({
+                success: true, 
+                message: "Office Admin registered successfully.",
+            });
+        } catch (err) {
+            console.error("Error registering Office Admin:", err);
+            res.status(500).json({ success: false, message: "Server error", error: err.message });
+        }
+    }
+
 }
 
 module.exports = new SuperAdminController();

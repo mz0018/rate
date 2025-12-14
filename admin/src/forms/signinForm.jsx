@@ -71,11 +71,11 @@ const SignInForm = () => {
           className="
             w-full 
             py-2 md:py-3 lg:py-4 
-            bg-blue-600 text-white rounded-md 
+            bg-[#628dec] text-white rounded-md 
             hover:bg-blue-700 
             disabled:bg-blue-300
             transition 
-            text-sm md:text-base lg:text-lg
+            text-sm md:text-base lg:text-lg cursor-pointer
           "
         >
           {loading ? "Signing in..." : "Sign In"}

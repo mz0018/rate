@@ -1,12 +1,20 @@
-import React, { lazy } from "react";
+import React, { lazy, Suspense } from "react";
 
-const BtnLogout = lazy(() => import("../buttons/BtnLogout"));
+const Navbar = lazy(() => import("./Navbar"));
+const Content = lazy(() => import("./Content"));
 
 const SuperAdminDashboard = () => {
   return (
     <>
-      <h1>Super Admin Dashboard</h1>
-      <BtnLogout />
+      <Suspense fallback={null}>
+        <Navbar />
+      </Suspense>
+
+      <main>
+        <Suspense fallback={null}>
+          <Content />
+        </Suspense>
+      </main>
     </>
   );
 };
