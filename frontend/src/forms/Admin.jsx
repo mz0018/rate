@@ -41,10 +41,6 @@ const Admin = () => {
         >
           <h2 className="text-5xl">Log In</h2>
 
-          {hasError && (
-            <p className="text-red-500 text-sm">{hasError}</p>
-          )}
-
           <div>
             <label className="text-sm font-medium">Username</label>
             <div className="relative mt-1">
@@ -54,7 +50,7 @@ const Admin = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full pl-10 py-2 border-b"
+                className={`w-full pl-10 py-2 border-b ${hasError ? 'border-red-500' : ''}`}
                 placeholder="Enter your username"
               />
             </div>
@@ -69,7 +65,7 @@ const Admin = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full pl-10 pr-10 py-2 border-b"
+                className={`w-full pl-10 pr-10 py-2 border-b ${hasError ? 'border-red-500' : ''}`}
                 placeholder="Enter your password"
               />
               <button
@@ -81,6 +77,25 @@ const Admin = () => {
               </button>
             </div>
           </div>
+
+          {hasError && (
+            <div
+              className="flex items-start gap-2 p-3 rounded-md"
+              style={{
+                border: `1px solid #f56565`,
+                backgroundColor: `#fff5f5`
+              }}
+            >
+              <p
+                className="text-xs sm:text-sm font-medium"
+                style={{
+                  color: "#f56565"
+                }}
+              >
+                {hasError}
+              </p>
+            </div>
+          )}
 
           <button
             type="submit"

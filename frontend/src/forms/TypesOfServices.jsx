@@ -129,7 +129,6 @@ const TypesOfServices = ({ selectedOffice, setSelectedOffice, onNext, onBack }) 
 
               {checkedServices.some((s) => s.id === service.id) && (
                 <>
-                  {/* Check if "Please specify" or "Paki-tukoy" is selected */}
                   {(service.name[language].toLowerCase().includes("please specify") ||
                     service.name[language].toLowerCase().includes("paki-tukoy")) && (
                     <div className="mt-2 sm:mt-3 ml-6 sm:ml-8">

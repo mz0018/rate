@@ -31,10 +31,15 @@ export const useSigninAdmin = () => {
     try {
       console.log("Submitting:", formData);
       const response = await api.post("/client/signin", formData);
-      login(response.data.data, response.data.token);
-      navigate("/admindashboard");  
+
+      if (response.data.success) {
+        login(response.data.data, response.data.token);
+        navigate("/admindashboard");  
+      } else {
+        setHasError(response.data.message);
+      }
     } catch (err) {
-      setHasError("Sign-in failed");
+      setHasError(err.response?.data?.message || "Something went wrong!");
     } finally {
       setLoading(false);
     }
