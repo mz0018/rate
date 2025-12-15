@@ -1,3 +1,6 @@
+const OfficeAdmin = require("../models/officeAdmins/OfficeAdminModel");
+const argon2 = require("argon2");
+const jwt = require("jsonwebtoken");
 class ClientController {
 
     constructor() {}
@@ -47,6 +50,71 @@ class ClientController {
                 success: false,
                 message: "Server error", 
                 error: error.message 
+            });
+        }
+    }
+
+    async verifyClientAdmin(req, res) {
+        try {
+            const { username, password } = req.body;
+
+            if (!username || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Username and password are required."
+            });
+            }
+
+            const officeAdmin = await OfficeAdmin
+            .findOne({ username: username.toLowerCase() })
+            .select("+password");
+
+            if (!officeAdmin) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid credentials."
+            });
+            }
+
+            const validPassword = await argon2.verify(officeAdmin.password, password);
+
+            if (!validPassword) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid credentials."
+            });
+            }
+
+            const token = jwt.sign(
+            {
+                id: officeAdmin._id,
+                username: officeAdmin.username,
+                role: officeAdmin.role
+            },
+            process.env.JWT_SECRET || "supersecretkey",
+            { expiresIn: "1h" }
+            );
+
+            res.status(200).json({
+            success: true,
+            message: "Login successful",
+            token,
+            data: {
+                _id: officeAdmin._id,
+                username: officeAdmin.username,
+                firstname: officeAdmin.firstName,
+                lastname: officeAdmin.lastName,
+                middlename: officeAdmin.middleName,
+                role: officeAdmin.role
+            }
+            });
+
+        } catch (error) {
+            console.error("Backend Error:", error);
+            res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message
             });
         }
     }
