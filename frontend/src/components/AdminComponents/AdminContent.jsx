@@ -1,7 +1,7 @@
 const AdminContent = () => {
     return (
-        <main className="p-6">
-            Content here
+        <main className="bg-gray-100 p-6 overflow-auto">
+            Content goes here
         </main>
     );
 };

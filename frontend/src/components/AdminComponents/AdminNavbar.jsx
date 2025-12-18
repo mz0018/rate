@@ -1,22 +1,25 @@
-import React, { lazy } from "react";
+import React from "react";
+import { Menu } from "lucide-react";
 
-const BtnLogout = lazy(() => import("../../buttons/BtnLogout"));
-
-const AdminNavbar = () => {
+const AdminNavbar = ({ onMenuClick }) => {
     return (
-        <nav
-            className="flex items-center justify-between p-4 text-white"
-            style={{ backgroundColor: "var(--bg-color)" }}
-        >
+        <nav className="col-span-full sm:col-start-2 bg-gray-800 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-                <img src="/img/logo.png" className="h-12" alt="logo" />
+                <img src="/img/logo.png" className="h-10" alt="logo" />
                 <div>
-                    <h2 className="font-bold text-lg">Municipality of Solano</h2>
-                    <span className="text-sm">Client's satisfaction and feedback form</span>
+                    <h2 className="font-bold">Municipality of Solano</h2>
+                    <span className="text-sm">Client feedback system</span>
                 </div>
             </div>
 
-            <BtnLogout />
+            {/* Hamburger: mobile only */}
+            <button
+                onClick={onMenuClick}
+                className="sm:hidden"
+                aria-label="Open sidebar"
+            >
+                <Menu size={24} />
+            </button>
         </nav>
     );
 };
