@@ -6,22 +6,21 @@ const AdminContent = lazy(() => import("../AdminComponents/AdminContent"));
 
 const AdminDashboard = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState(null);
 
     return (
         <Suspense fallback={null}>
             <div className="h-screen grid grid-cols-1 sm:grid-cols-[16rem_1fr] grid-rows-[auto_1fr]">
                 
-                {/* Sidebar */}
                 <AdminSidebar
                     open={sidebarOpen}
                     onClose={() => setSidebarOpen(false)}
+                    setActiveSection={setActiveSection}
                 />
 
-                {/* Navbar */}
                 <AdminNavbar onMenuClick={() => setSidebarOpen(true)} />
 
-                {/* Content */}
-                <AdminContent />
+                <AdminContent activeSection={activeSection} />
             </div>
         </Suspense>
     );

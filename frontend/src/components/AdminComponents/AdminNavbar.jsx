@@ -12,7 +12,6 @@ const AdminNavbar = ({ onMenuClick }) => {
                 </div>
             </div>
 
-            {/* Hamburger: mobile only */}
             <button
                 onClick={onMenuClick}
                 className="sm:hidden"
