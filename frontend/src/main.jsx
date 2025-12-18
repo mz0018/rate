@@ -6,7 +6,7 @@ import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 
 const Admin = lazy(() => import("./forms/Admin.jsx"));
-const AdminDashboard = lazy(() => import("./components/AdminDashboard.jsx"));
+const AdminDashboard = lazy(() => import("./components/AdminComponents/AdminDashboard.jsx"));
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
