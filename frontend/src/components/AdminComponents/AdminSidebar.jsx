@@ -1,10 +1,11 @@
 import { X } from "lucide-react";
 import BtnLogout from "../../buttons/BtnLogout";
+import { NavLink } from "react-router-dom";
 
 const sidebarLinks = [
-    { label: "Generate Report", icon: "", link: "" },
-    { label: "Generate Queue Number", icon: "", link: "" },
-    { label: "Analytics Report", icon: "", link: "" },
+    { label: "Feedback Form", icon: "", path: "feedback" },
+    { label: "Generate Queue Number", icon: "", path: "queueing" },
+    { label: "Analytics Report", icon: "", path: "analytics" },
 ];
 
 const AdminSidebar = ({ open, onClose, setActiveSection }) => {
@@ -12,7 +13,7 @@ const AdminSidebar = ({ open, onClose, setActiveSection }) => {
     return (
         <>
             <aside className="hidden sm:block row-span-2 bg-white shadow-lg p-4">
-                <SidebarContent setActiveSection={setActiveSection} />
+                <SidebarContent setActiveSection={setActiveSection} onClose={onClose} />
             </aside>
 
             {open && (
@@ -35,7 +36,7 @@ const AdminSidebar = ({ open, onClose, setActiveSection }) => {
                 </div>
 
                 <div className="flex-1 min-h-0 overflow-y-auto px-4">
-                    <SidebarContent setActiveSection={setActiveSection} />
+                    <SidebarContent setActiveSection={setActiveSection} onClose={onClose} />
                 </div>
             </div>
             </aside>
@@ -44,12 +45,23 @@ const AdminSidebar = ({ open, onClose, setActiveSection }) => {
     );
 };
 
-const SidebarContent = ({ setActiveSection }) => (
+const SidebarContent = ({ onClose }) => (
   <nav className="flex flex-col h-full min-h-0 text-gray-900">
     <div className="space-y-4">
-    {sidebarLinks.map((item, index) => (
-        <button onClick={() => setActiveSection(item.label)} key={index}>{item.label}</button>
-    ))}
+      {sidebarLinks.map((item, index) => (
+        <NavLink
+          key={index}
+          to={item.path}
+          onClick={onClose}
+          className={({ isActive }) =>
+            `block p-2 rounded ${
+              isActive ? "bg-gray-200 font-bold" : ""
+            }`
+          }
+        >
+          {item.label}
+        </NavLink>
+      ))}
     </div>
 
     <div className="mt-auto p-4">

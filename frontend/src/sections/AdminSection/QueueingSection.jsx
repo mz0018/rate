@@ -6,7 +6,6 @@ const QueueingSection = () => {
 
     return (
         <>
-        Hello this is the queing section
         <BtnGenerateQueueNum />
         </>
     )
