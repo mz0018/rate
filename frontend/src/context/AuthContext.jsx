@@ -1,39 +1,41 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import api from "../services/api";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("jwtToken");
-    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const loadUser = async () => {
+      try {
+        const res = await api.get("/client/me");
+        setUser(res.data.data);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(storedUser);
-    }
-    setLoading(false);
+    loadUser();
   }, []);
 
-  const login = (userData, jwtToken) => {
-    localStorage.setItem("jwtToken", jwtToken);
-    localStorage.setItem("user", JSON.stringify(userData));
+  const login = (userData) => {
     setUser(userData);
-    setToken(jwtToken);
   };
 
-  const logout = () => {
-    localStorage.removeItem("jwtToken");
-    localStorage.removeItem("user");
-    setUser(null);
-    setToken(null);
+  const logout = async () => {
+    try {
+      await api.post("/client/logout");
+    } catch {
+      setUser(null);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

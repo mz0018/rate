@@ -1,6 +1,7 @@
 const OfficeAdmin = require("../models/officeAdmins/OfficeAdminModel");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
+
 class ClientController {
 
     constructor() {}
@@ -95,18 +96,38 @@ class ClientController {
                 { expiresIn: "1h" }
             );
 
-            res.status(200).json({
+            // res.status(200).json({
+            //     success: true,
+            //     message: "Login successful",
+            //     token,
+            //     data: {
+            //         _id: officeAdmin._id,
+            //         username: officeAdmin.username,
+            //         firstname: officeAdmin.firstName,
+            //         lastname: officeAdmin.lastName,
+            //         middlename: officeAdmin.middleName,
+            //         role: officeAdmin.role
+            //     }
+            // });
+
+            res.cookie("access_token", token, {
+                httpOnly: true,
+                // secure: process.env.NODE_ENV === "production",
+                // sameSite: "strict", pag ready na sa production
+                secure: false,
+                sameSite: "lax",
+                maxAge: 60 * 60 * 1000,
+            }).status(200).json({
                 success: true,
-                message: "Login successful",
-                token,
+                message: "Login successfull",
                 data: {
                     _id: officeAdmin._id,
                     username: officeAdmin.username,
                     firstname: officeAdmin.firstName,
                     lastname: officeAdmin.lastName,
-                    middlename: officeAdmin.middleName,
-                    role: officeAdmin.role
-                }
+                    middleName: officeAdmin.middleName,
+                    role: officeAdmin.role,
+                },
             });
 
         } catch (error) {
@@ -116,6 +137,42 @@ class ClientController {
                 message: "Server error",
                 error: error.message
             });
+        }
+    }
+
+    async getCurrentUser(req, res) {
+        try {
+            const user = await OfficeAdmin.findById(req.user.id).select(
+                "_id username firstName lastName middleName role"
+            );
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            res.status(200).json({
+                success: true,
+                data: user,
+            });
+        } catch (err) {
+            res.status(500).json({
+                message: "Server error",
+            })
+        }
+    }
+
+    async logout(req, res) {
+        try {
+            res.clearCookie("access_token", {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "production",
+            }).status(200).json({ success: true, message: "Logged out "});
+        } catch (err) {
+            console.error("Backend error: ", error);
+            res.status(500).json({
+                message: "Server error",
+            })
         }
     }
 }

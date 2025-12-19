@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
+import api from "../services/api"; // use centralized Axios instance
 
 const useFormSubmission = () => {
   const [selectedOffice, setSelectedOffice] = useState(null);
@@ -93,10 +93,7 @@ const useFormSubmission = () => {
     };
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/client/submit`,
-        formData
-      );
+      const response = await api.post("/client/submit", formData);
 
       await Swal.fire({
         icon: "success",
@@ -138,8 +135,6 @@ const useFormSubmission = () => {
       }, 50);
 
       return { success: false };
-
-      debugger;
     } finally {
       setIsLoading(false);
     }

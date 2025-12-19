@@ -33,7 +33,7 @@ export const useSigninAdmin = () => {
       const response = await api.post("/client/signin", formData);
 
       if (response.data.success) {
-        login(response.data.data, response.data.token);
+        login(response.data.data);
         navigate("/admindashboard");  
       } else {
         setHasError(response.data.message);

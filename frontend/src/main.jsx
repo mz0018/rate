@@ -5,23 +5,31 @@ import "./index.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+
 const Admin = lazy(() => import("./forms/Admin.jsx"));
 const AdminDashboard = lazy(() => import("./components/AdminComponents/AdminDashboard.jsx"));
 
 const QueueingSection = lazy(() => import("./sections/AdminSection/QueueingSection.jsx"));
 const AnalyticsSection = lazy(() => import("./sections/AdminSection/AnalyticsSection.jsx"));
 const FeedBackSection = lazy(() => import("./sections/AdminSection/FeedbackSection.jsx"));
+const SettingSection = lazy(() => import("./sections/AdminSection/SettingSection"));
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/admin", element: <Admin /> },
   { 
     path: "/admindashboard", 
-    element: <AdminDashboard />,
+    element: (
+      <ProtectedRoute>
+        <AdminDashboard />
+      </ProtectedRoute>
+    ),
     children: [
       { path: "feedback", element: <FeedBackSection /> },
       { path: "queueing", element: <QueueingSection /> },
       { path: "analytics", element: <AnalyticsSection /> },
+      { path: "settings", element: <SettingSection /> },
     ]
   }
 ]);

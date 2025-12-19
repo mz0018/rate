@@ -6,6 +6,7 @@ const sidebarLinks = [
     { label: "Feedback Form", icon: "", path: "feedback" },
     { label: "Generate Queue Number", icon: "", path: "queueing" },
     { label: "Analytics Report", icon: "", path: "analytics" },
+    { label: "Settings", icon: "", path: "settings" },
 ];
 
 const AdminSidebar = ({ open, onClose, setActiveSection }) => {

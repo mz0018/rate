@@ -1,23 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const BtnLogout = () => {
-  const { user, token, logout, loading } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!loading && (!token || !user)) {
-      logout();
-      navigate("/");
-    }
-  }, [token, user, logout, navigate, loading]);
+  if (loading || !user) return null;
 
-  if (loading || !token || !user) return null;
-
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    await logout(); 
+    navigate("/"); 
   };
 
   return (
