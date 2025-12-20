@@ -9,7 +9,7 @@ const officeAdminSchema = new mongoose.Schema({
   officeId: { type: Number, required: true },
   officeName: { type: String, required: true, trim: true },
   password: { type: String, required: true, minlength: 6, select: false },
-  role: { type: String, enum: ["office-admin"], default: "office-admin" },
+  role: { type: String, enum: ["hr-admin", "office-admin"], required: true },
   isActive: { type: Boolean, default: true },
 }, { timestamps: true });
 

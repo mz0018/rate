@@ -10,10 +10,11 @@ const INITIAL_STATE = {
   username: "",
   officeId: "",
   officeName: "",
+  role: "",
   password: "123456",
 };
 
-const useBtnRegisterUser = () => {
+const useBtnRegisterUser = (onSuccess) => {
   const [formData, setFormData] = useState(INITIAL_STATE);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState(null);
@@ -56,6 +57,8 @@ const useBtnRegisterUser = () => {
         text: data.message || "Office Admin registered successfully",
         confirmButtonColor: "#22c55e",
       });
+
+      onSuccess?.();
 
       resetForm();
       return true;

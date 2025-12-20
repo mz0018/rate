@@ -23,11 +23,10 @@ const BtnRegisterUsers = () => {
     handleSubmit,
     isLoading,
     errors,
-  } = useBtnRegisterUser();
+  } = useBtnRegisterUser(() => setOpen(false));
 
   const onSubmit = async (e) => {
-    const success = await handleSubmit(e);
-    if (success) setOpen(false);
+    await handleSubmit(e);
   };
 
   return (
@@ -64,6 +63,19 @@ const BtnRegisterUsers = () => {
                   {...field}
                 />
               ))}
+
+              {/* ✅ ROLE DROPDOWN */}
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="w-full border p-2 rounded bg-white"
+                required
+              >
+                <option value="">Select Role</option>
+                <option value="hr-admin">HR Admin</option>
+                <option value="office-admin">Office Admin</option>
+              </select>
 
               <select
                 name="officeId"
