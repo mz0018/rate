@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile
     container_name: rate-frontend
     ports:
-      - "3000:3000"
+      - "5173:3000"
 
   admin:
     build:
@@ -25,7 +25,7 @@ services:
       dockerfile: Dockerfile
     container_name: rate-admin
     ports:
-      - "3001:3000"
+      - "5174:3000"
 
 
 

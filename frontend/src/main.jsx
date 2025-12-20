@@ -1,11 +1,11 @@
 import { StrictMode, lazy } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
-
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminIndexRedirect from "./components/routing/AdminIndexRedirect";
 
 const Admin = lazy(() => import("./forms/Admin.jsx"));
 const AdminDashboard = lazy(() => import("./components/AdminComponents/AdminDashboard.jsx"));
@@ -26,6 +26,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
+      { index: true, element: <AdminIndexRedirect /> }, //control where to navigate after success logged in
       { path: "feedback", element: <FeedBackSection /> },
       { path: "queueing", element: <QueueingSection /> },
       { path: "analytics", element: <AnalyticsSection /> },
