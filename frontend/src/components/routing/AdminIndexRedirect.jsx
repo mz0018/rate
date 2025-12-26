@@ -2,9 +2,11 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const AdminIndexRedirect = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (!user) return null;
+  if (loading) return <div>Loading...</div>;
+
+  if (!user) return <Navigate to="/admin" replace />;
 
   switch (user.role) {
     case "hr-admin":

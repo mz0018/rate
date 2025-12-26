@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     const loadUser = async () => {
       try {
         const res = await api.get("/client/me");
-        setUser(res.data.data);
+        setUser(res.data);
       } catch {
         setUser(null);
       } finally {
@@ -24,6 +24,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
+    console.table(userData);
   };
 
   const logout = async () => {
@@ -41,4 +42,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+  return ctx;
+};

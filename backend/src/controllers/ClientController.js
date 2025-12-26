@@ -96,19 +96,6 @@ class ClientController {
                 { expiresIn: "1h" }
             );
 
-            // res.status(200).json({
-            //     success: true,
-            //     message: "Login successful",
-            //     token,
-            //     data: {
-            //         _id: officeAdmin._id,
-            //         username: officeAdmin.username,
-            //         firstname: officeAdmin.firstName,
-            //         lastname: officeAdmin.lastName,
-            //         middlename: officeAdmin.middleName,
-            //         role: officeAdmin.role
-            //     }
-            // });
 
             res.cookie("access_token", token, {
                 httpOnly: true,
@@ -127,6 +114,7 @@ class ClientController {
                     lastname: officeAdmin.lastName,
                     middleName: officeAdmin.middleName,
                     role: officeAdmin.role,
+                    officeId: officeAdmin.officeId
                 },
             });
 
@@ -143,7 +131,7 @@ class ClientController {
     async getCurrentUser(req, res) {
         try {
             const user = await OfficeAdmin.findById(req.user.id).select(
-                "_id username firstName lastName middleName role"
+                "_id username firstName lastName middleName role position officeId"
             );
 
             if (!user) {
@@ -152,7 +140,13 @@ class ClientController {
 
             res.status(200).json({
                 success: true,
-                data: user,
+                _id: user._id,
+                username: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                role: user.role,
+                position: user.position,
+                officeId: user.officeId
             });
         } catch (err) {
             res.status(500).json({

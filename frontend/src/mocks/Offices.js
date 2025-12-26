@@ -40,19 +40,7 @@ export const offices = [
   { id: 10, name: "Municipal Budget Office (MBO)", services: [], icon: FaRegChartBar },
   { id: 11, name: "Municipal Planning and Development Office (MPDO)", services: [], icon: FaMapMarkedAlt },
   { id: 12, name: "Municipal Agriculture Office (MAGRO)", services: [], icon: FaSeedling },
-  { 
-    id: 13, 
-    name: "Municipal Health Office (MHO)", 
-    services: [],
-    icon: FaHospital,
-    sections: [
-      { id: 131, name: "MHO-Nutrition Section", services: [], icon: FaSeedling },
-      { id: 132, name: "MHO-Laboratory", services: [], icon: FaFlask },
-      { id: 133, name: "MHO-Pharmacy", services: [], icon: FaPills },
-      { id: 134, name: "MHO-Dental Clinic", services: [], icon: FaSmile },
-      { id: 135, name: "MHO-TB DOT", services: [], icon: FaInjection },
-    ]
-  },
+  { id: 13, name: "Municipal Health Office (MHO)", services: [], icon: FaHospital },
   { id: 14, name: "Municipal General Service Office (MGSO)", services: [], icon: FaBuilding },
   { id: 15, name: "Municipal Disaster Risk Reduction Management Office (MDRRMO)", services: [], icon: FaExclamationTriangle },
   { id: 16, name: "SEEDO-Market", services: [], icon: FaStore },
