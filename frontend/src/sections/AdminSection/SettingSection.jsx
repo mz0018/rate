@@ -24,6 +24,9 @@ const SettingSection = () => {
       <p>
         <strong>Role:</strong> {user.role}
       </p>
+      <p>
+        <strong>Object id:</strong> {user._id}
+      </p>
     </div>
   );
 };

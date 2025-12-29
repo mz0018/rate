@@ -1,6 +1,9 @@
 const OfficeAdmin = require("../models/officeAdmins/OfficeAdminModel");
+const Offices = require("../models/offices/OfficesSchema");
+const QueueTicket = require("../models/queue/QueueTicket");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
+const { notifyNewQueue } = require("../socket");
 
 class ClientController {
 
@@ -169,6 +172,91 @@ class ClientController {
             })
         }
     }
+
+    async generateQueueNumber(req, res) {
+        try {
+            const { id } = req.params;
+
+            if (!id) {
+                return res.status(400).json({ message: "Office ID is required" });
+            }
+
+            const office = await Offices.findOneAndUpdate(
+                { officeId: Number(id) },
+                { $inc: { lastQueueNumber: 1 } },
+                { new: true }
+            );
+
+            if (!office) {
+                return res.status(404).json({ message: "Office not found" });
+            }
+
+            const yearSuffix = String(new Date().getFullYear()).slice(-2);
+
+            const queueNumber = `${office.officeCode}${yearSuffix}-${String(
+                office.lastQueueNumber
+            ).padStart(3, "0")}`;
+
+            const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+            const ticket = await QueueTicket.create({
+                officeId: office.officeId,
+                queueNumber,
+                status: "WAITING",
+                expiresAt,
+            });
+
+            notifyNewQueue(ticket);
+
+            return res.status(201).json({
+                success: true,
+                queueNumber: ticket.queueNumber,
+                expiresAt: ticket.expiresAt,
+                status: ticket.status,
+            });
+
+        } catch (err) {
+            console.error("Backend error:", err);
+            res.status(500).json({ message: "Server error" });
+        }
+    }
+
+    async getAllQueue(req, res) {
+        try {
+            const { id } = req.params;
+
+            // Verify if user is HR-admin
+            const admin = await OfficeAdmin.findById(id);
+            if (!admin) return res.status(404).json({ message: "Admin not found" });
+            if (admin.role !== "hr-admin") return res.status(403).json({ message: "Access denied" });
+
+            // Pagination setup
+            const page = Number(req.query.page) || 1;
+            const limit = 15;
+            const skip = (page - 1) * limit;
+
+            // Count total documents
+            const total = await QueueTicket.countDocuments();
+
+            // Fetch paginated data
+            const queue = await QueueTicket.find({})
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit);
+
+            res.status(200).json({
+                data: queue,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit), // fixed Math.cell → Math.ceil
+            });
+
+        } catch (err) {
+            console.error("Backend error:", err);
+            res.status(500).json({ message: "Server error" });
+        }
+    }
+
 }
 
 module.exports = new ClientController();

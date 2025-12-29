@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children }) => {
     const { user, loading } = auth;
     if (!auth) return null;
 
-    if (loading) return <div>Loading..</div>;
+    if (loading) return <></>;
 
     if (!user) return <Navigate to="/admin" replace />;
 

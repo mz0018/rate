@@ -1,12 +1,5 @@
 const mongoose = require("mongoose");
 
-const serviceSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-});
-
 const officeSchema = new mongoose.Schema(
   {
     officeId: {
@@ -15,18 +8,16 @@ const officeSchema = new mongoose.Schema(
       unique: true,
     },
 
-    officeName: {
-      type: String,
-      required: true,
-    },
+    // officeName: {
+    //   type: String,
+    //   required: true,
+    // },
 
     officeCode: {
       type: String,
       required: true,
       unique: true,
     },
-
-    services: [serviceSchema],
 
     lastQueueNumber: {
       type: Number,
