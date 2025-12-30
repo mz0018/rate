@@ -1,159 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useAuth } from "../../context/AuthContext";
-import api from "../../services/api";
-import { connectSocket, disconnectSocket } from "../../../src/socket";
+import useAdminQueueTable from "../../hooks/useAdminQueueTable";
 import { offices } from "../../mocks/Offices";
 
 const AdminQueueTable = () => {
-    const { user } = useAuth();
-    const [list, setList] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [hasErrors, setHasErrors] = useState(null);
-    const [selectedOfficeId, setSelectedOfficeId] = useState("");
+  const { user } = useAuth();
+  const { list, isLoading, error, isOnline, page, totalPages, limit, goPrev, goNext } = useAdminQueueTable(user);
 
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const limit = 15;
+  const office = offices.find((office) => office.id === user.officeId);
+  const officeName = office ? office.name : "Unknown Office";
 
-    const fetchQueue = async (pageNumber = 1) => {
-        try {
-            setIsLoading(true);
-            const response = await api.get(
-                `client/getqueue/${user._id}?page=${pageNumber}`
-            );
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error loading queue.</p>;
 
-            setList(response.data.data);
-            setPage(response.data.page);
-            setTotalPages(response.data.totalPages);
+  return (
+    <div>
+      <div className="flex items-center space-x-2">
+        <div
+          className={`w-3 h-3 ${isOnline ? "bg-green-500" : "bg-red-500"} rounded-full animate-pulse`}
+        ></div>
+        <span>{officeName} Real-time Monitoring</span>
+      </div>
 
-        } catch (err) {
-            console.error("Something went wrong! ", err);
-            setHasErrors(err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      {list.length === 0 ? (
+        <p>No queues found.</p>
+      ) : (
+        <table className="table-auto border-collapse border border-gray-300 mt-4">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border px-4 py-2">#</th>
+              <th className="border px-4 py-2">Queue Number</th>
+              <th className="border px-4 py-2">Status</th>
+              <th className="border px-4 py-2">Expires At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((q, index) => (
+              <tr key={q._id}>
+                <td className="border px-4 py-2">
+                  {index + 1 + (page - 1) * limit}
+                </td>
+                <td className="border px-4 py-2">{q.queueNumber}</td>
+                <td className="border px-4 py-2">{q.status}</td>
+                <td className="border px-4 py-2">
+                  {new Date(q.expiresAt).toLocaleTimeString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-    useEffect(() => {
-        if (user?._id) {
-            fetchQueue(page);
-        }
-    }, [user]);
+      <div className="flex gap-2 mt-4">
+        <button
+          disabled={page === 1}
+          onClick={goPrev}
+          className="px-3 py-1 border disabled:opacity-50"
+        >
+          Prev
+        </button>
 
-    useEffect(() => {
-        const socket = connectSocket();
+        <span>
+          Page {page} of {totalPages}
+        </span>
 
-        socket.on("newQueue", (ticket) => {
-            console.log("New queue ticket received:", ticket);
-
-            setList(prev => {
-                const updated = [ticket, ...prev];
-
-                return updated.slice(0, limit);
-            });
-
-            setTotalPages(prevTotal => {
-                if (list.length >= limit) {
-                    return prevTotal + 1;
-                }
-                return prevTotal;
-            });
-        });
-
-        return () => {
-            disconnectSocket();
-        };
-    }, [list.length]);
-
-    const handlePrev = () => {
-        if (page > 1) {
-            const newPage = page - 1;
-            setPage(newPage);
-            fetchQueue(newPage);
-        }
-    };
-
-    const handleNext = () => {
-        if (list.length === limit || page < totalPages) {
-            const newPage = page + 1;
-            setPage(newPage);
-            fetchQueue(newPage);
-        }
-    };
-
-    if (isLoading) return <p>Loading...</p>;
-    if (hasErrors) return <p>Error loading queue.</p>;
-
-    return (
-        <div>
-            {list.length === 0 ? (
-                <p>No queues found.</p>
-            ) : (
-                <>
-                <h2>HR Real time monitoring</h2>
-                
-                <select
-                    value={selectedOfficeId}
-                    onChange={(e) => {
-                        const officeId = e.target.value;
-                        setSelectedOfficeId(officeId);
-
-                        const selectedOffice = offices.find(o => o.id.toString() === officeId);
-                        console.log("Selected office:", selectedOffice);
-                    }}
-                    >
-                    <option value="">All Offices</option>
-                    {offices.map(o => (
-                        <option key={o.id} value={o.id}>
-                        {o.name}
-                        </option>
-                    ))}
-                </select>
-
-                <table className="table-auto border-collapse border border-gray-300 mt-4">
-                    <thead>
-                        <tr className="bg-gray-200">
-                            <th className="border border-gray-300 px-4 py-2">#</th>
-                            <th className="border border-gray-300 px-4 py-2">Queue Number</th>
-                            <th className="border border-gray-300 px-4 py-2">Status</th>
-                            <th className="border border-gray-300 px-4 py-2">Expires At</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {list.map((q, index) => (
-                            <tr key={q._id}>
-                                <td className="border border-gray-300 px-4 py-2">{index + 1 + (page - 1) * limit}</td>
-                                <td className="border border-gray-300 px-4 py-2">{q.queueNumber}</td>
-                                <td className="border border-gray-300 px-4 py-2">{q.status}</td>
-                                <td className="border border-gray-300 px-4 py-2">{new Date(q.expiresAt).toLocaleTimeString()}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                </>
-            )}
-
-            <div className="flex gap-2 mt-4">
-                <button
-                    disabled={page === 1}
-                    onClick={handlePrev}
-                    className="px-3 py-1 border disabled:opacity-50"
-                >
-                    Prev
-                </button>
-
-                <span>Page {page} of {totalPages}</span>
-
-                <button
-                    disabled={list.length < limit || page === totalPages}
-                    onClick={handleNext}
-                    className="px-3 py-1 border disabled:opacity-50"
-                >
-                    Next
-                </button>
-            </div>
-        </div>
-    );
-}
+        <button
+          disabled={page === totalPages}
+          onClick={goNext}
+          className="px-3 py-1 border disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default AdminQueueTable;

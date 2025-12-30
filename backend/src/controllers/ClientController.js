@@ -227,15 +227,18 @@ class ClientController {
 
             const admin = await OfficeAdmin.findById(id);
             if (!admin) return res.status(404).json({ message: "Admin not found" });
-            if (admin.role !== "hr-admin") return res.status(403).json({ message: "Access denied" });
+
+            const officeId = admin.officeId;
 
             const page = Number(req.query.page) || 1;
             const limit = 15;
             const skip = (page - 1) * limit;
 
-            const total = await QueueTicket.countDocuments();
+            const filter = { officeId };
 
-            const queue = await QueueTicket.find({})
+            const total = await QueueTicket.countDocuments(filter);
+
+            const queue = await QueueTicket.find(filter)
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit);
