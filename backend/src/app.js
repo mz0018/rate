@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const compression = require("compression");
 const cookieParser = require("cookie-parser");
 
 const clientRoutes = require("./routes/clientRoutes");
@@ -15,6 +16,12 @@ app.use(
         allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
+
+app.use(compression({
+    threshold: 1024,
+    level: 6,
+}));
+
 app.use(cookieParser());
 
 app.use((req, res, next) => {

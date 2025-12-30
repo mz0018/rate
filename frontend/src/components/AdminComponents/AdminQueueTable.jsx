@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
 import { connectSocket, disconnectSocket } from "../../../src/socket";
+import { offices } from "../../mocks/Offices";
 
 const AdminQueueTable = () => {
     const { user } = useAuth();
     const [list, setList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [hasErrors, setHasErrors] = useState(null);
+    const [selectedOfficeId, setSelectedOfficeId] = useState("");
 
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -44,13 +46,24 @@ const AdminQueueTable = () => {
         socket.on("newQueue", (ticket) => {
             console.log("New queue ticket received:", ticket);
 
-            setList(prev => [ticket, ...prev.slice(0, limit - 1)]);
+            setList(prev => {
+                const updated = [ticket, ...prev];
+
+                return updated.slice(0, limit);
+            });
+
+            setTotalPages(prevTotal => {
+                if (list.length >= limit) {
+                    return prevTotal + 1;
+                }
+                return prevTotal;
+            });
         });
 
         return () => {
             disconnectSocket();
         };
-    }, []);
+    }, [list.length]);
 
     const handlePrev = () => {
         if (page > 1) {
@@ -78,6 +91,25 @@ const AdminQueueTable = () => {
             ) : (
                 <>
                 <h2>HR Real time monitoring</h2>
+                
+                <select
+                    value={selectedOfficeId}
+                    onChange={(e) => {
+                        const officeId = e.target.value;
+                        setSelectedOfficeId(officeId);
+
+                        const selectedOffice = offices.find(o => o.id.toString() === officeId);
+                        console.log("Selected office:", selectedOffice);
+                    }}
+                    >
+                    <option value="">All Offices</option>
+                    {offices.map(o => (
+                        <option key={o.id} value={o.id}>
+                        {o.name}
+                        </option>
+                    ))}
+                </select>
+
                 <table className="table-auto border-collapse border border-gray-300 mt-4">
                     <thead>
                         <tr className="bg-gray-200">

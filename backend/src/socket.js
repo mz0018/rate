@@ -8,6 +8,11 @@ function initSocket(server) {
             origin: ["http://localhost:5173", "http://localhost:5174"],
             credentials: true,
         },
+        perMessageDeflate: {
+            threshold: 1024,
+            level: 6,
+            memLevel: 8,
+        }
     });
 
     io.on("connection", (socket) => {
