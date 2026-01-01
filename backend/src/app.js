@@ -2,9 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const compression = require("compression");
 const cookieParser = require("cookie-parser");
-
 const clientRoutes = require("./routes/clientRoutes");
 const superAdminRoutes = require("./routes/SuperAdminRoutes");
+const expireQueueTickets = require("./jobs/expireQueueTickets");
 
 const app = express();
 
@@ -42,5 +42,7 @@ app.get("/", (req, res) => {
 app.use("/client", clientRoutes);
 
 app.use("/it", superAdminRoutes);
+
+expireQueueTickets();   
 
 module.exports = app;

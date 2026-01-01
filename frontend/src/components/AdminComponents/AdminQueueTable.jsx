@@ -31,6 +31,7 @@ const AdminQueueTable = () => {
               <th className="border px-4 py-2">#</th>
               <th className="border px-4 py-2">Queue Number</th>
               <th className="border px-4 py-2">Status</th>
+              <th className="border px-4 py-2">Date Created</th>
               <th className="border px-4 py-2">Expires At</th>
             </tr>
           </thead>
@@ -42,6 +43,9 @@ const AdminQueueTable = () => {
                 </td>
                 <td className="border px-4 py-2">{q.queueNumber}</td>
                 <td className="border px-4 py-2">{q.status}</td>
+                <td className="border px-4 py-2">
+                  {new Date(q.createdAt).toLocaleDateString()}
+                </td>
                 <td className="border px-4 py-2">
                   {new Date(q.expiresAt).toLocaleTimeString()}
                 </td>
